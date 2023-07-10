@@ -45,10 +45,10 @@ func (usrRepo *userRepoImpl) InsertUser(usr *model.UserModel) error {
 }
 
 func (usrRepo *userRepoImpl) GetUserByName(name string) (*model.UserModel, error) {
-	qry := "SELECT id, user_name, is_active FROM user_credential WHERE user_name = $1"
+	qry := "SELECT id, user_name, password, is_active FROM user_credential WHERE user_name = $1"
 
 	usr := &model.UserModel{}
-	err := usrRepo.db.QueryRow(qry, name).Scan(&usr.Id, &usr.UserName, &usr.Active)
+	err := usrRepo.db.QueryRow(qry, name).Scan(&usr.Id, &usr.UserName, &usr.Password, &usr.Active)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil

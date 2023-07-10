@@ -22,14 +22,14 @@ func (lgnUsecase *loginUsecaseImpl) GetUserByNameAndPassword(name string, pass s
 		return fmt.Errorf("usrUsecase.usrRepo.GetUserByName() : %w" , err)
 	}
 	if usr == nil {
-		return  apperror.AppError{
+		return apperror.AppError{
 			ErrorCode: 400,
 			ErrorMessage: fmt.Sprintf("data user dengan nama : %s tidak ada", name),
 		}
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(pass))
 	if err != nil {
-		return  apperror.AppError{
+		return apperror.AppError{
 			ErrorCode: 400,
 			ErrorMessage: "password is incorrect",
 		}

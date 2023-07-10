@@ -8,8 +8,7 @@ import (
 type UsecaseManager interface {
 	GetUserUsecase() usecase.UserUsecase
 	GetLoginUsecase() usecase.LoginUsecase
-	GetInterestUsecase() usecase.InterestUsecase
-	GetLateInterestUsecase() usecase.LateInterestUsecase
+	GetLoanProductUsecase() usecase.LoanProductUsecase
 }
 
 type usecaseManager struct {
@@ -17,14 +16,12 @@ type usecaseManager struct {
 
 	usrUsecase    usecase.UserUsecase
 	lgUsecase     usecase.LoginUsecase
-	intrsUsecase  usecase.InterestUsecase
-	lintrsUsecase usecase.LateInterestUsecase
+	lprdctUsecase usecase.LoanProductUsecase
 }
 
 var onceLoadUserUsecase sync.Once
 var onceLoadLoginUsecase sync.Once
-var onceLoadInterestUsecase sync.Once
-var onceLoadLateInterestUsecase sync.Once
+var onceLoadLoanProductUsecase sync.Once
 
 func (um *usecaseManager) GetUserUsecase() usecase.UserUsecase {
 	onceLoadUserUsecase.Do(func() {
@@ -41,19 +38,12 @@ func (um *usecaseManager) GetLoginUsecase() usecase.LoginUsecase {
 	})
 	return um.lgUsecase
 }
-func (um *usecaseManager) GetInterestUsecase() usecase.InterestUsecase {
-	onceLoadInterestUsecase.Do(func() {
-		um.intrsUsecase = usecase.NewInterestUsecase(um.repoManager.GetInterestRepo())
+func (um *usecaseManager) GetLoanProductUsecase() usecase.LoanProductUsecase {
+	onceLoadLoanProductUsecase.Do(func() {
+		um.lprdctUsecase = usecase.NewLoanProductUsecase(um.repoManager.GetLoanProductRepo())
 
 	})
-	return um.intrsUsecase
-}
-func (um *usecaseManager) GetLateInterestUsecase() usecase.LateInterestUsecase {
-	onceLoadLateInterestUsecase.Do(func() {
-		um.lintrsUsecase = usecase.NewLateInterestUsecase(um.repoManager.GetLateInterestRepo())
-
-	})
-	return um.lintrsUsecase
+	return um.lprdctUsecase
 }
 
 func NewUsecaseManager(repoManager RepoManager) UsecaseManager {

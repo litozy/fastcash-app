@@ -7,21 +7,18 @@ import (
 
 type RepoManager interface {
 	GetUserRepo() repo.UserRepo
-	GetLateInterestRepo() repo.LateInterestRepo
-	GetInterestRepo() repo.InterestRepo
+	GetLoanProductRepo() repo.LoanProductRepo
 }
 
 type repoManager struct {
 	infraManager InfraManager
 
 	usrRepo    repo.UserRepo
-	intrsRepo  repo.InterestRepo
-	lintrsRepo repo.LateInterestRepo
+	lprdctRepo repo.LoanProductRepo
 }
 
 var onceLoadUserRepo sync.Once
-var onceLoadInterestRepo sync.Once
-var onceLoadLInterestRepo sync.Once
+var onceLoadLoanProductRepo sync.Once
 
 func (rm *repoManager) GetUserRepo() repo.UserRepo {
 	onceLoadUserRepo.Do(func() {
@@ -29,17 +26,11 @@ func (rm *repoManager) GetUserRepo() repo.UserRepo {
 	})
 	return rm.usrRepo
 }
-func (rm *repoManager) GetInterestRepo() repo.InterestRepo {
-	onceLoadInterestRepo.Do(func() {
-		rm.intrsRepo = repo.NewInterestRepo(rm.infraManager.GetDB())
+func (rm *repoManager) GetLoanProductRepo() repo.LoanProductRepo {
+	onceLoadLoanProductRepo.Do(func() {
+		rm.lprdctRepo = repo.NewLoanProductRepo(rm.infraManager.GetDB())
 	})
-	return rm.intrsRepo
-}
-func (rm *repoManager) GetLateInterestRepo() repo.LateInterestRepo {
-	onceLoadLInterestRepo.Do(func() {
-		rm.lintrsRepo = repo.NewLateInterestRepo(rm.infraManager.GetDB())
-	})
-	return rm.lintrsRepo
+	return rm.lprdctRepo
 }
 
 func NewRepoManager(infraManager InfraManager) RepoManager {

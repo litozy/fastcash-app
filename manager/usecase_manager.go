@@ -9,19 +9,22 @@ type UsecaseManager interface {
 	GetUserUsecase() usecase.UserUsecase
 	GetLoginUsecase() usecase.LoginUsecase
 	GetLoanProductUsecase() usecase.LoanProductUsecase
+	GetOjkStatusUsecase() usecase.OjkStatusUsecase
 }
 
 type usecaseManager struct {
 	repoManager RepoManager
 
-	usrUsecase    usecase.UserUsecase
-	lgUsecase     usecase.LoginUsecase
-	lprdctUsecase usecase.LoanProductUsecase
+	usrUsecase     usecase.UserUsecase
+	lgUsecase      usecase.LoginUsecase
+	lprdctUsecase  usecase.LoanProductUsecase
+	ojkstatUsecase usecase.OjkStatusUsecase
 }
 
 var onceLoadUserUsecase sync.Once
 var onceLoadLoginUsecase sync.Once
 var onceLoadLoanProductUsecase sync.Once
+var onceLoadOjkStatusUsecase sync.Once
 
 func (um *usecaseManager) GetUserUsecase() usecase.UserUsecase {
 	onceLoadUserUsecase.Do(func() {
@@ -44,6 +47,13 @@ func (um *usecaseManager) GetLoanProductUsecase() usecase.LoanProductUsecase {
 
 	})
 	return um.lprdctUsecase
+}
+func (um *usecaseManager) GetOjkStatusUsecase() usecase.OjkStatusUsecase {
+	onceLoadOjkStatusUsecase.Do(func() {
+		um.ojkstatUsecase = usecase.NewOjkStatusUsecase(um.repoManager.GetOjkStatusRepo())
+
+	})
+	return um.ojkstatUsecase
 }
 
 func NewUsecaseManager(repoManager RepoManager) UsecaseManager {

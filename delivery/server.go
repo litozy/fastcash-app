@@ -21,6 +21,7 @@ func (s *server) Run() {
 	controller.NewUserController(s.srv, s.usecaseManager.GetUserUsecase())
 	controller.NewLoginController(s.srv, s.usecaseManager.GetLoginUsecase())
 	controller.NewLoanProductHandler(s.srv, s.usecaseManager.GetLoanProductUsecase())
+	controller.NewOjkStatusHandler(s.srv, s.usecaseManager.GetOjkStatusUsecase())
 
 	s.srv.Run()
 }

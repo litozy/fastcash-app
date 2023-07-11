@@ -8,6 +8,7 @@ import (
 type UsecaseManager interface {
 	GetUserUsecase() usecase.UserUsecase
 	GetLoginUsecase() usecase.LoginUsecase
+	GetTransactionAppUsecase() usecase.TransactionApplyUsecase
 }
 
 type usecaseManager struct {
@@ -15,10 +16,12 @@ type usecaseManager struct {
 
 	usrUsecase usecase.UserUsecase
 	lgUsecase usecase.LoginUsecase
+	taUsecase usecase.TransactionApplyUsecase
 }
 
 var onceLoadUserUsecase sync.Once
 var onceLoadLoginUsecase sync.Once
+var onceLoadTrxApplyUsecase sync.Once
 
 func (um *usecaseManager) GetUserUsecase() usecase.UserUsecase {
 	onceLoadUserUsecase.Do(func() {
@@ -34,6 +37,14 @@ func (um *usecaseManager) GetLoginUsecase() usecase.LoginUsecase {
 
 	})
 	return um.lgUsecase
+}
+
+func (um *usecaseManager) GetTransactionAppUsecase() usecase.TransactionApplyUsecase {
+	onceLoadTrxApplyUsecase.Do(func() {
+		um.taUsecase = usecase.NewTransactionApplyUsecase(um.repoManager.GetTransactionAppRepo())
+
+	})
+	return um.taUsecase
 }
 
 func NewUsecaseManager(repoManager RepoManager) UsecaseManager {

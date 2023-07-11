@@ -20,6 +20,7 @@ func (s *server) Run() {
 	s.srv.Use(controller.LoggerMiddleware())
 	controller.NewUserController(s.srv, s.usecaseManager.GetUserUsecase())
 	controller.NewLoginController(s.srv, s.usecaseManager.GetLoginUsecase())
+	controller.NewTransactionApplyController(s.srv, s.usecaseManager.GetTransactionAppUsecase())
 
 	s.srv.Run()
 }

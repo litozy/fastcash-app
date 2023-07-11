@@ -9,11 +9,16 @@ import (
 
 type TransactionApplyUsecase interface {
 	InsertApplication(*model.TransactionApply) error
+	GetAllApp() ([]model.TransactionApplyView, error)
 }
 
 type transactionApplyUsecaseImpl struct {
 	taRepo repo.TransactionApplyRepo
 	lpRepo repo.LoanProductRepo
+}
+
+func (taUsecase *transactionApplyUsecaseImpl) GetAllApp() ([]model.TransactionApplyView, error) {
+	return taUsecase.taRepo.GetAllApp()
 }
 
 func (taUsecase *transactionApplyUsecaseImpl) InsertApplication(tra *model.TransactionApply) error {

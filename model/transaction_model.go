@@ -10,3 +10,13 @@ type TransactionApply struct {
 	CreatedBy    string
 	UpdatedBy    string
 }
+
+type TransactionApplyView struct {
+	CustomerId   int
+	CustomerName string
+	Nik          int
+	Product      string
+	Amount       float64
+	DateApproval string
+	StatusOjk    int
+}

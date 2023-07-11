@@ -9,13 +9,47 @@ import (
 
 type TransactionApplyRepo interface {
 	InsertApplication(*model.TransactionApply) error
+	GetAllApp() ([]model.TransactionApplyView, error)
 }
 
 type transactionApplyImpl struct {
 	db *sql.DB
 }
 
-func (taRepo transactionApplyImpl) InsertApplication(tra *model.TransactionApply) error {
+func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, error) {
+	qry := `
+		SELECT tx.customer_id AS custId, c.name AS custName, c.nik AS nik, p.tenor AS tenor, tx.amount AS amount, tx.date_approval, o.status AS status 
+		FROM tx_application AS tx
+		JOIN customer AS c ON tx.customer_id = c.id
+		JOIN ojk_status AS o ON tx.ojk_status_id = o.id 
+		JOIN loan_product AS p ON tx.loan_product_id = p.id
+	`
+	rows, err := taRepo.db.Query(qry)
+	if err != nil {
+		return nil, fmt.Errorf("getAllApp() : %w", err)
+	}
+	defer rows.Close()
+
+	var arrayTr []model.TransactionApplyView
+	for rows.Next() {
+		tra := model.TransactionApplyView{}
+		err := rows.Scan(
+			&tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &tra.DateApproval, &tra.StatusOjk,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("getAllTransaction(): %w", err)
+		}
+		arrayTr = append(arrayTr, tra)
+	}
+	
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("getAllTransaction(): %w", err)
+	}
+	return arrayTr, nil
+}
+
+func (taRepo *transactionApplyImpl) InsertApplication(tra *model.TransactionApply) error {
 	tx, err := taRepo.db.Begin()
 	if err != nil {
 		return fmt.Errorf("InsertTransaction() Begin : %w", err)

@@ -19,6 +19,23 @@ type transactionApplyControllerImpl struct {
 	taUsecase usecase.TransactionApplyUsecase
 }
 
+func (taController *transactionApplyControllerImpl) GetAllApp(ctx *gin.Context) {
+	arrTr, err := taController.taUsecase.GetAllApp()
+	if err != nil {
+		fmt.Printf("serviceHandlerImpl.GetAllService() : %v", err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"errorMessage": "Terjadi kesalahan ketika mengambil data transaksi application",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data" : arrTr,
+		"success": true,
+	})
+}
+
 func (taController *transactionApplyControllerImpl) InsertApplication(ctx *gin.Context) {
 	tra := &model.TransactionApply{}
 	err := ctx.ShouldBindJSON(&tra)
@@ -63,6 +80,7 @@ func NewTransactionApplyController(srv *gin.Engine, taUsecase usecase.Transactio
 	}
 
 	srv.POST("/application", taController.InsertApplication)
+	srv.GET("/application", taController.GetAllApp)
 	
 	return taController
 }

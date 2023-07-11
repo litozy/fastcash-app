@@ -15,27 +15,19 @@ type LoanProductHandler struct {
 }
 
 func (lprdctHandler LoanProductHandler) GetLoanProductById(ctx *gin.Context) {
-	// id := &model.LoanProductModel{}
-	// err := ctx.ShouldBindJSON(&id)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{
-	// 		"success":      false,
-	// 		"errorMessage": "Invalid JSON data",
-	// 	})
-	// 	return
-	// }
-	// if id == nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{
-	// 		"success":      false,
-	// 		"errorMessage": "Id tidak boleh kosong",
-	// 	})
-	// 	return
-	// }
 	idText := ctx.Param("id")
+	if idText == "" {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"success":      false,
+			"errorMessage": "Id tidak boleh kosong",
+		})
+		return
+	}
+
 	id, err := strconv.Atoi(idText)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success":      false,
+			"succes":       false,
 			"errorMessage": "Id harus angka",
 		})
 		return
@@ -98,42 +90,25 @@ func (lprdctHandler LoanProductHandler) InsertLoanProduct(ctx *gin.Context) {
 }
 
 func (lprdctHandler LoanProductHandler) DeleteLoanProduct(ctx *gin.Context) {
-	id := &model.LoanProductModel{}
-	err := ctx.ShouldBindJSON(&id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success":      false,
-			"errorMessage": "Invalid JSON data",
-		})
-		return
-	}
-	if id == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+	idText := ctx.Param("id")
+	if idText == "" {
+		ctx.JSON(http.StatusBadGateway, gin.H{
 			"success":      false,
 			"errorMessage": "Id tidak boleh kosong",
 		})
 		return
 	}
 
-	// idText := ctx.Param("id")
-	// if idText == "" {
-	// 	ctx.JSON(http.StatusBadGateway, gin.H{
-	// 		"success":      false,
-	// 		"errorMessage": "Id tidak boleh kosong",
-	// 	})
-	// 	return
-	// }
+	id, err := strconv.Atoi(idText)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"succes":       false,
+			"errorMessage": "Id harus angka",
+		})
+		return
+	}
 
-	// id, err := strconv.Atoi(idText)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{
-	// 		"succes":       false,
-	// 		"errorMessage": "Id harus angka",
-	// 	})
-	// 	return
-	// }
-
-	err = lprdctHandler.lprdctUsecase.DeleteLoanProduct(id.Id)
+	err = lprdctHandler.lprdctUsecase.DeleteLoanProduct(id)
 	if err != nil {
 		fmt.Printf("lprdctHandler.lprdctUseCase.getAllLoanProduct() : %v", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -177,10 +152,10 @@ func NewLoanProductHandler(srv *gin.Engine, lprdctUsecase usecase.LoanProductUse
 	lprdctHandler := &LoanProductHandler{
 		lprdctUsecase: lprdctUsecase,
 	}
-	srv.GET("/loanProduct/:id", lprdctHandler.GetLoanProductById)
-	srv.GET("/loanProduct", lprdctHandler.GetAllLoanProduct)
+	srv.GET("/loanProduct", lprdctHandler.GetLoanProductById)
+	srv.GET("/loanProduct/:id", lprdctHandler.GetAllLoanProduct)
 	srv.POST("/loanProduct", lprdctHandler.InsertLoanProduct)
-	srv.DELETE("/loanProduct", lprdctHandler.DeleteLoanProduct)
+	srv.DELETE("/loanProduct/:id", lprdctHandler.DeleteLoanProduct)
 	srv.PUT("/loanProduct", lprdctHandler.UpdateLoanProduct)
 	return lprdctHandler
 }

@@ -137,7 +137,7 @@ func NewOjkStatusHandler(srv *gin.Engine, ojkstatUsecase usecase.OjkStatusUsecas
 	ojkstatHandler := &OjkStatusHandler{
 		ojkstatUsecase: ojkstatUsecase,
 	}
-	srv.GET("/ojkStatus", ojkstatHandler.GetOjkStatusById)
+	srv.GET("/ojkStatus/:id", ojkstatHandler.GetOjkStatusById)
 	srv.GET("/ojkStatus", ojkstatHandler.GetAllOjkStatus)
 	srv.POST("/ojkStatus", ojkstatHandler.InsertOjkStatus)
 	return ojkstatHandler

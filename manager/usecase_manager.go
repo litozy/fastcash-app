@@ -61,7 +61,7 @@ func (um *usecaseManager) GetOjkStatusUsecase() usecase.OjkStatusUsecase {
 
 func (um *usecaseManager) GetTransactionAppUsecase() usecase.TransactionApplyUsecase {
 	onceLoadTrxApplyUsecase.Do(func() {
-		um.taUsecase = usecase.NewTransactionApplyUsecase(um.repoManager.GetTransactionAppRepo())
+		um.taUsecase = usecase.NewTransactionApplyUsecase(um.repoManager.GetTransactionAppRepo(), um.repoManager.GetLoanProductRepo())
 
 	})
 	return um.taUsecase

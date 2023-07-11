@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"peminjaman/model"
 	"peminjaman/usecase"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,33 +15,33 @@ type LoanProductHandler struct {
 }
 
 func (lprdctHandler LoanProductHandler) GetLoanProductById(ctx *gin.Context) {
-	id := &model.LoanProductModel{}
-	err := ctx.ShouldBindJSON(&id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success":      false,
-			"errorMessage": "Invalid JSON data",
-		})
-		return
-	}
-	if id == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success":      false,
-			"errorMessage": "Id tidak boleh kosong",
-		})
-		return
-	}
-	// idText := ctx.Param("id")
-	// id, err := strconv.Atoi(idText)
+	// id := &model.LoanProductModel{}
+	// err := ctx.ShouldBindJSON(&id)
 	// if err != nil {
 	// 	ctx.JSON(http.StatusBadRequest, gin.H{
 	// 		"success":      false,
-	// 		"errorMessage": "Id harus angka",
+	// 		"errorMessage": "Invalid JSON data",
 	// 	})
 	// 	return
 	// }
+	// if id == nil {
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{
+	// 		"success":      false,
+	// 		"errorMessage": "Id tidak boleh kosong",
+	// 	})
+	// 	return
+	// }
+	idText := ctx.Param("id")
+	id, err := strconv.Atoi(idText)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success":      false,
+			"errorMessage": "Id harus angka",
+		})
+		return
+	}
 
-	lprdct, err := lprdctHandler.lprdctUsecase.GetLoanProductById(id.Id)
+	lprdct, err := lprdctHandler.lprdctUsecase.GetLoanProductById(id)
 	if err != nil {
 		fmt.Printf("LoanProductHandler.GetLoanProductById() : %v ", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -176,7 +177,7 @@ func NewLoanProductHandler(srv *gin.Engine, lprdctUsecase usecase.LoanProductUse
 	lprdctHandler := &LoanProductHandler{
 		lprdctUsecase: lprdctUsecase,
 	}
-	srv.GET("/loanProduct", lprdctHandler.GetLoanProductById)
+	srv.GET("/loanProduct/:id", lprdctHandler.GetLoanProductById)
 	srv.GET("/loanProduct", lprdctHandler.GetAllLoanProduct)
 	srv.POST("/loanProduct", lprdctHandler.InsertLoanProduct)
 	srv.DELETE("/loanProduct", lprdctHandler.DeleteLoanProduct)

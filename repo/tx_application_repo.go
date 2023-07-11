@@ -21,7 +21,7 @@ func (taRepo transactionApplyImpl) InsertApplication(tra *model.TransactionApply
 		return fmt.Errorf("InsertTransaction() Begin : %w", err)
 	}
 
-	tra.OjkStatus = 0
+	tra.OjkStatus = 1
 	tra.DateApproval = "0001-01-01"
 	qry := utils.INSERT_TRANSACTION_APPLICATION
 

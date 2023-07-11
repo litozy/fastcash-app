@@ -11,6 +11,8 @@ type OjkStatusRepo interface {
 	GetOjkStatusById(id int) (*model.OjkStatusModel, error)
 	GetAllOjkStatus() ([]*model.OjkStatusModel, error)
 	InsertOjkStatus(ojkstat *model.OjkStatusModel) error
+	DeleteOjkStatus(id int) error
+	UpdateOjkStatus(ojkstat *model.OjkStatusModel) error
 }
 
 type ojkStatusRepoImpl struct {
@@ -22,7 +24,7 @@ type ojkStatusRepoImpl struct {
 func (ojkstatRepo *ojkStatusRepoImpl) GetOjkStatusById(id int) (*model.OjkStatusModel, error) {
 	qry := utils.GET_LOAN_PRODUCT_BY_ID
 	ojkstat := &model.OjkStatusModel{}
-	err := ojkstatRepo.db.QueryRow(qry, id).Scan(&ojkstat.Id, &ojkstat.Status)
+	err := ojkstatRepo.db.QueryRow(qry, id).Scan(&ojkstat.Id, &ojkstat.Status, &ojkstat.Description)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -51,9 +53,27 @@ func (ojkstatRepo *ojkStatusRepoImpl) GetAllOjkStatus() ([]*model.OjkStatusModel
 
 func (ojkstatRepo *ojkStatusRepoImpl) InsertOjkStatus(ojkstat *model.OjkStatusModel) error {
 	qry := utils.INSERT_LOAN_PRODUCT
-	_, err := ojkstatRepo.db.Exec(qry, ojkstat.Status)
+	_, err := ojkstatRepo.db.Exec(qry, ojkstat.Status, ojkstat.Description)
 	if err != nil {
 		return fmt.Errorf("error on ojkStatusRepoImpl.InsertOjkStatus() : %w", err)
+	}
+	return nil
+}
+
+func (ojkstatRepo *ojkStatusRepoImpl) DeleteOjkStatus(id int) error {
+	qry := utils.DELETE_OJK_STATUS
+	_, err := ojkstatRepo.db.Exec(qry, id)
+	if err != nil {
+		return fmt.Errorf("error on ojkStatusRepo.Impl.DeleteOjkStatus() : %w", err)
+	}
+	return nil
+}
+
+func (ojkstatRepo *ojkStatusRepoImpl) UpdateOjkStatus(ojkstat *model.OjkStatusModel) error {
+	qry := utils.UPDATE_OJK_STATUS
+	_, err := ojkstatRepo.db.Exec(qry, ojkstat.Id, ojkstat.Status, ojkstat.Description)
+	if err != nil {
+		return fmt.Errorf("error on ojkStatusRepoImpl.UpdateOjkStatus() : %w", err)
 	}
 	return nil
 }

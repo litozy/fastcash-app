@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var onceLoadDB sync.Once  //singleton
+var onceLoadDB sync.Once //singleton
 
 type InfraManager interface {
 	GetDB() *sql.DB

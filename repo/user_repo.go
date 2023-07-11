@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"peminjaman/model"
+	"peminjaman/utils"
+	"time"
 )
 
 type UserRepo interface {
@@ -16,8 +18,8 @@ type userRepoImpl struct {
 	db *sql.DB
 }
 
-func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error) {
-	qry := "SELECT id, user_name, is_active FROM user_credential"
+func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error)  {
+	qry := utils.SELECT_ALL_USER
 
 	rows, err := usrRepo.db.Query(qry)
 	if err != nil {
@@ -28,16 +30,19 @@ func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error) {
 	var arrUser []model.UserModel
 	for rows.Next() {
 		usr := &model.UserModel{}
-		rows.Scan(&usr.Id, &usr.UserName, &usr.Active)
+		rows.Scan(&usr.Id, &usr.UserName, &usr.CreatedAt, &usr.UpdatedAt)
 		arrUser = append(arrUser, *usr)
 	}
 	return arrUser, nil
 }
 
 func (usrRepo *userRepoImpl) InsertUser(usr *model.UserModel) error {
-	qry := "INSERT INTO user_credential(id, user_name, password, is_active) VALUES($1, $2, $3, $4)"
+	qry := utils.INSERT_USER
 
-	_, err := usrRepo.db.Exec(qry, &usr.Id, &usr.UserName, &usr.Password, &usr.Active)
+	usr.CreatedAt = time.Now()
+	usr.UpdatedAt = time.Now()
+
+	_, err := usrRepo.db.Exec(qry, &usr.Id , &usr.UserName, &usr.Password, &usr.CreatedAt, &usr.UpdatedAt)
 	if err != nil {
 		return fmt.Errorf("error on userRepoImpl.InsertUser() : %w", err)
 	}
@@ -45,10 +50,10 @@ func (usrRepo *userRepoImpl) InsertUser(usr *model.UserModel) error {
 }
 
 func (usrRepo *userRepoImpl) GetUserByName(name string) (*model.UserModel, error) {
-	qry := "SELECT id, user_name, password, is_active FROM user_credential WHERE user_name = $1"
+	qry := utils.SELECT_USER_BY_NAME
 
 	usr := &model.UserModel{}
-	err := usrRepo.db.QueryRow(qry, name).Scan(&usr.Id, &usr.UserName, &usr.Password, &usr.Active)
+	err := usrRepo.db.QueryRow(qry, name).Scan(&usr.Id, &usr.UserName, &usr.Password, &usr.CreatedAt, &usr.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil

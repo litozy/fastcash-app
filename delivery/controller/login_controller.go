@@ -13,11 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type loginHandlerImpl struct {
+type loginControllerImpl struct {
 	lgUsecase usecase.LoginUsecase
 }
 
-func (lgHandler loginHandlerImpl) Login(ctx *gin.Context) {
+func (lgController loginControllerImpl) Login(ctx *gin.Context) {
 	loginData := &model.LoginModel{}
 	err := ctx.ShouldBindJSON(&loginData)
 	if err != nil {
@@ -28,7 +28,7 @@ func (lgHandler loginHandlerImpl) Login(ctx *gin.Context) {
 		return
 	}
 	
-	err = lgHandler.lgUsecase.GetUserByNameAndPassword(loginData.Username, loginData.Password)
+	err = lgController.lgUsecase.GetUserByNameAndPassword(loginData.Username, loginData.Password)
 	if err != nil {
 
 		appError := apperror.AppError{}
@@ -58,7 +58,7 @@ func (lgHandler loginHandlerImpl) Login(ctx *gin.Context) {
 }
 
 func NewLoginController(srv *gin.Engine, lgUsecase usecase.LoginUsecase) {
-	lgHandler := &loginHandlerImpl{
+	lgHandler := &loginControllerImpl{
 		lgUsecase: lgUsecase,
 	}
 	srv.POST("/login", lgHandler.Login)

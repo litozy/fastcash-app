@@ -8,6 +8,7 @@ import (
 type UsecaseManager interface {
 	GetUserUsecase() usecase.UserUsecase
 	GetLoginUsecase() usecase.LoginUsecase
+	GetTransactionAppUsecase() usecase.TransactionApplyUsecase
 	GetLoanProductUsecase() usecase.LoanProductUsecase
 	GetOjkStatusUsecase() usecase.OjkStatusUsecase
 }
@@ -15,14 +16,16 @@ type UsecaseManager interface {
 type usecaseManager struct {
 	repoManager RepoManager
 
+	lgUsecase usecase.LoginUsecase
+	taUsecase usecase.TransactionApplyUsecase
 	usrUsecase     usecase.UserUsecase
-	lgUsecase      usecase.LoginUsecase
 	lprdctUsecase  usecase.LoanProductUsecase
 	ojkstatUsecase usecase.OjkStatusUsecase
 }
 
 var onceLoadUserUsecase sync.Once
 var onceLoadLoginUsecase sync.Once
+var onceLoadTrxApplyUsecase sync.Once
 var onceLoadLoanProductUsecase sync.Once
 var onceLoadOjkStatusUsecase sync.Once
 
@@ -54,6 +57,14 @@ func (um *usecaseManager) GetOjkStatusUsecase() usecase.OjkStatusUsecase {
 
 	})
 	return um.ojkstatUsecase
+}
+
+func (um *usecaseManager) GetTransactionAppUsecase() usecase.TransactionApplyUsecase {
+	onceLoadTrxApplyUsecase.Do(func() {
+		um.taUsecase = usecase.NewTransactionApplyUsecase(um.repoManager.GetTransactionAppRepo())
+
+	})
+	return um.taUsecase
 }
 
 func NewUsecaseManager(repoManager RepoManager) UsecaseManager {

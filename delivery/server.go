@@ -13,13 +13,15 @@ type Server interface {
 
 type server struct {
 	usecaseManager manager.UsecaseManager
-	srv *gin.Engine
+	srv            *gin.Engine
 }
 
 func (s *server) Run() {
 	s.srv.Use(controller.LoggerMiddleware())
 	controller.NewUserController(s.srv, s.usecaseManager.GetUserUsecase())
 	controller.NewLoginController(s.srv, s.usecaseManager.GetLoginUsecase())
+	controller.NewLoanProductHandler(s.srv, s.usecaseManager.GetLoanProductUsecase())
+	controller.NewOjkStatusHandler(s.srv, s.usecaseManager.GetOjkStatusUsecase())
 
 	s.srv.Run()
 }
@@ -33,6 +35,6 @@ func NewServer() Server {
 
 	return &server{
 		usecaseManager: usecase,
-		srv: srv,
+		srv:            srv,
 	}
 }

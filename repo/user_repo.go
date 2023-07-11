@@ -16,7 +16,7 @@ type userRepoImpl struct {
 	db *sql.DB
 }
 
-func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error)  {
+func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error) {
 	qry := "SELECT id, user_name, is_active FROM user_credential"
 
 	rows, err := usrRepo.db.Query(qry)
@@ -37,7 +37,7 @@ func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error)  {
 func (usrRepo *userRepoImpl) InsertUser(usr *model.UserModel) error {
 	qry := "INSERT INTO user_credential(id, user_name, password, is_active) VALUES($1, $2, $3, $4)"
 
-	_, err := usrRepo.db.Exec(qry, &usr.Id , &usr.UserName, &usr.Password, &usr.Active)
+	_, err := usrRepo.db.Exec(qry, &usr.Id, &usr.UserName, &usr.Password, &usr.Active)
 	if err != nil {
 		return fmt.Errorf("error on userRepoImpl.InsertUser() : %w", err)
 	}
@@ -63,5 +63,3 @@ func NewUserRepo(db *sql.DB) UserRepo {
 		db: db,
 	}
 }
-
-

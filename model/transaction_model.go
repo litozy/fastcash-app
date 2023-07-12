@@ -5,8 +5,19 @@ type TransactionApply struct {
 	CustomerId   int
 	ProductId    int
 	Amount       float64
-	OjkStatus    int
+	OjkStatusId  int
 	DateApproval string
 	CreatedBy    string
 	UpdatedBy    string
+}
+
+type TransactionApplyView struct {
+	Id           int
+	CustomerId   int
+	CustomerName string
+	Nik          int
+	Product      string
+	Amount       float64
+	DateApproval string `json:"DateApproval,omitempty"`
+	StatusOjk    int
 }

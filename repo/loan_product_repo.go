@@ -27,7 +27,7 @@ func (lprdctRepo *loanProductRepoImpl) GetLoanProductById(id int) (*model.LoanPr
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("error on loanProductRepoImpl.getLoanProductById() : %v", &err)
+		return nil, fmt.Errorf("error on loanProductRepoImpl.getLoanProductById() : %v", err)
 	}
 	return lprdct, nil
 }
@@ -37,7 +37,7 @@ func (lprdctRepo *loanProductRepoImpl) GetAllLoanProduct() ([]*model.LoanProduct
 	var arrLoanProduct []*model.LoanProductModel
 	rows, err := lprdctRepo.db.Query(qry)
 	if err != nil {
-		return nil, fmt.Errorf("getAllLoanProduct error : %v", &err)
+		return nil, fmt.Errorf("getAllLoanProduct error : %v", err)
 	}
 
 	for rows.Next() {
@@ -62,7 +62,7 @@ func (lprdctRepo *loanProductRepoImpl) DeleteLoanProduct(id int) error {
 	qry := utils.DELETE_LOAN_PRODUCT
 	_, err := lprdctRepo.db.Exec(qry, id)
 	if err != nil {
-		return fmt.Errorf("error on loanProductRepoImpl.DeleteLoanProduct : %v", &err)
+		return fmt.Errorf("error on loanProductRepoImpl.DeleteLoanProduct : %v", err)
 	}
 	return nil
 }

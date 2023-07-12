@@ -11,16 +11,18 @@ type UsecaseManager interface {
 	GetTransactionAppUsecase() usecase.TransactionApplyUsecase
 	GetLoanProductUsecase() usecase.LoanProductUsecase
 	GetOjkStatusUsecase() usecase.OjkStatusUsecase
+	GetCustomerUsecase() usecase.CustomerUsecase
 }
 
 type usecaseManager struct {
 	repoManager RepoManager
 
-	lgUsecase usecase.LoginUsecase
-	taUsecase usecase.TransactionApplyUsecase
+	lgUsecase      usecase.LoginUsecase
+	taUsecase      usecase.TransactionApplyUsecase
 	usrUsecase     usecase.UserUsecase
 	lprdctUsecase  usecase.LoanProductUsecase
 	ojkstatUsecase usecase.OjkStatusUsecase
+	cstmUsecase    usecase.CustomerUsecase
 }
 
 var onceLoadUserUsecase sync.Once
@@ -28,6 +30,7 @@ var onceLoadLoginUsecase sync.Once
 var onceLoadTrxApplyUsecase sync.Once
 var onceLoadLoanProductUsecase sync.Once
 var onceLoadOjkStatusUsecase sync.Once
+var onceLoadCustomerUsecase sync.Once
 
 func (um *usecaseManager) GetUserUsecase() usecase.UserUsecase {
 	onceLoadUserUsecase.Do(func() {
@@ -67,6 +70,12 @@ func (um *usecaseManager) GetTransactionAppUsecase() usecase.TransactionApplyUse
 	return um.taUsecase
 }
 
+func (um *usecaseManager) GetCustomerUsecase() usecase.CustomerUsecase {
+	onceLoadCustomerUsecase.Do(func() {
+		um.cstmUsecase = usecase.NewCustomerUsecase(um.repoManager.GetCustomerRepo())
+	})
+	return um.cstmUsecase
+}
 func NewUsecaseManager(repoManager RepoManager) UsecaseManager {
 	return &usecaseManager{
 		repoManager: repoManager,

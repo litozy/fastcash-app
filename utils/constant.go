@@ -31,7 +31,13 @@ const (
 	WHERE tx.id = $1
 	`
 	UPDATE_OJK_STATUS_TRANSACTION_APPLICATION = "UPDATE tx_application SET ojk_status_id = $1, update_by = $2 WHERE id = $3"
-	UPDATE_OJK_STATUS_DATE_APPROVAL = "UPDATE tx_application SET date_approval = $1 WHERE id = $2"
+	UPDATE_OJK_STATUS_DATE_APPROVAL           = "UPDATE tx_application SET date_approval = $1 WHERE id = $2"
+
+	GET_ALL_CUSTOMER   = "SELECT id, user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status FROM customer ORDER BY id ASC"
+	GET_CUSTOMER_BY_ID = "SELECT id, user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status FROM customer WHERE id = $1"
+	INSERT_CUSTOMER    = "INSERT INTO customer (user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
+	DELETE_CUSTOMER    = "DELETE FROM customer WHERE id=$1)"
+	UPDATE_CUSTOMER    = "UPDATE customer SET user_id = $2, name = $3, address = $4, nik = $5, birthdate = $6, family_member = $7, family_phone = $8, family_address = $9, status = $10 WHERE id = $1"
 
 	GET_ALL_LOAN_PRODUCT   = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product ORDER BY id ASC"
 	GET_LOAN_PRODUCT_BY_ID = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product WHERE id = $1"

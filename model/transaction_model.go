@@ -18,6 +18,6 @@ type TransactionApplyView struct {
 	Nik          int
 	Product      string
 	Amount       float64
-	DateApproval string
+	DateApproval string `json:"DateApproval,omitempty"`
 	StatusOjk    int
 }

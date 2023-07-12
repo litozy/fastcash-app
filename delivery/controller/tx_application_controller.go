@@ -73,6 +73,7 @@ func (taController *transactionApplyControllerImpl) GetAllApp(ctx *gin.Context) 
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"errorMessage": "Terjadi kesalahan ketika mengambil data transaksi application",
+			"errorCode": err.Error(),
 		})
 		return
 	}

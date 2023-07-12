@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"peminjaman/model"
 	"peminjaman/utils"
+	"time"
 )
 
 type TransactionApplyRepo interface {
@@ -27,14 +28,17 @@ func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, e
 	defer rows.Close()
 
 	var arrayTr []model.TransactionApplyView
+	
 	for rows.Next() {
 		tra := model.TransactionApplyView{}
+		var date time.Time
 		err := rows.Scan(
-			&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &tra.DateApproval, &tra.StatusOjk,
+			&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &date, &tra.StatusOjk,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("getAllTransaction(): %w", err)
 		}
+		tra.DateApproval = date.Format("2006-01-02")
 		arrayTr = append(arrayTr, tra)
 	}
 	
@@ -48,13 +52,15 @@ func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, e
 func (taRepo *transactionApplyImpl) GetAppById(id int) (*model.TransactionApplyView, error) {
 	qry := utils.GET_TRANSACTION_APPLICATION_BY_ID
 tra := &model.TransactionApplyView{}
-err := taRepo.db.QueryRow(qry, id).Scan(&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &tra.DateApproval, &tra.StatusOjk)
+var date time.Time
+err := taRepo.db.QueryRow(qry, id).Scan(&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &date, &tra.StatusOjk)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("error on serviceRepoImpl.GetServiceById() : %w", err)
 	}
+	tra.DateApproval = date.Format("2006-01-02")
 	return tra, nil
 }
 
@@ -66,9 +72,10 @@ func (taRepo *transactionApplyImpl) InsertApplication(tra *model.TransactionAppl
 
 	tra.OjkStatusId = 1
 	tra.DateApproval = "0001-01-01"
+	tra.UpdatedBy = ""
 	qry := utils.INSERT_TRANSACTION_APPLICATION
 
-	_, err = tx.Exec(qry, &tra.CustomerId, &tra.ProductId, &tra.Amount, tra.OjkStatusId, tra.DateApproval)
+	_, err = tx.Exec(qry, &tra.CustomerId, &tra.ProductId, &tra.Amount, tra.OjkStatusId, tra.DateApproval, tra.UpdatedBy, &tra.CustomerId)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("InsertTransaction() Detail : %w", err)
@@ -86,10 +93,20 @@ func (taRepo *transactionApplyImpl) UpdateStatusOjk(tra *model.TransactionApply)
 
 	qry := utils.UPDATE_OJK_STATUS_TRANSACTION_APPLICATION
 
-	_, err = tx.Exec(qry, &tra.OjkStatusId, &tra.Id)
+	_, err = tx.Exec(qry, &tra.OjkStatusId, &tra.UpdatedBy, &tra.Id)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("UpdateStatusOjk() Detail : %w", err)
+	}
+
+	tra.DateApproval = time.Now().Format("2006-01-02")
+	qryDate := utils.UPDATE_OJK_STATUS_DATE_APPROVAL
+	if tra.OjkStatusId == 2 {
+		_, err = tx.Exec(qryDate, tra.DateApproval, &tra.Id)
+		if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("UpdateStatusOjk.DateApproval() Detail : %w", err)
+	}
 	}
 	tx.Commit()
 

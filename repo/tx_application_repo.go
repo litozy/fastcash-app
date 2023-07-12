@@ -10,6 +10,8 @@ import (
 type TransactionApplyRepo interface {
 	InsertApplication(*model.TransactionApply) error
 	GetAllApp() ([]model.TransactionApplyView, error)
+	GetAppById(int) (*model.TransactionApplyView, error)
+	UpdateStatusOjk(*model.TransactionApply) error
 }
 
 type transactionApplyImpl struct {
@@ -17,13 +19,7 @@ type transactionApplyImpl struct {
 }
 
 func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, error) {
-	qry := `
-		SELECT tx.customer_id AS custId, c.name AS custName, c.nik AS nik, p.tenor AS tenor, tx.amount AS amount, tx.date_approval, o.status AS status 
-		FROM tx_application AS tx
-		JOIN customer AS c ON tx.customer_id = c.id
-		JOIN ojk_status AS o ON tx.ojk_status_id = o.id 
-		JOIN loan_product AS p ON tx.loan_product_id = p.id
-	`
+	qry := utils.GET_ALL_TRANSACTION_APPLICATION
 	rows, err := taRepo.db.Query(qry)
 	if err != nil {
 		return nil, fmt.Errorf("getAllApp() : %w", err)
@@ -34,7 +30,7 @@ func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, e
 	for rows.Next() {
 		tra := model.TransactionApplyView{}
 		err := rows.Scan(
-			&tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &tra.DateApproval, &tra.StatusOjk,
+			&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &tra.DateApproval, &tra.StatusOjk,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("getAllTransaction(): %w", err)
@@ -49,17 +45,30 @@ func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, e
 	return arrayTr, nil
 }
 
+func (taRepo *transactionApplyImpl) GetAppById(id int) (*model.TransactionApplyView, error) {
+	qry := utils.GET_TRANSACTION_APPLICATION_BY_ID
+tra := &model.TransactionApplyView{}
+err := taRepo.db.QueryRow(qry, id).Scan(&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.Nik, &tra.Product, &tra.Amount, &tra.DateApproval, &tra.StatusOjk)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("error on serviceRepoImpl.GetServiceById() : %w", err)
+	}
+	return tra, nil
+}
+
 func (taRepo *transactionApplyImpl) InsertApplication(tra *model.TransactionApply) error {
 	tx, err := taRepo.db.Begin()
 	if err != nil {
 		return fmt.Errorf("InsertTransaction() Begin : %w", err)
 	}
 
-	tra.OjkStatus = 1
+	tra.OjkStatusId = 1
 	tra.DateApproval = "0001-01-01"
 	qry := utils.INSERT_TRANSACTION_APPLICATION
 
-	_, err = tx.Exec(qry, &tra.CustomerId, &tra.ProductId, &tra.Amount, tra.OjkStatus, tra.DateApproval)
+	_, err = tx.Exec(qry, &tra.CustomerId, &tra.ProductId, &tra.Amount, tra.OjkStatusId, tra.DateApproval)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("InsertTransaction() Detail : %w", err)
@@ -69,6 +78,23 @@ func (taRepo *transactionApplyImpl) InsertApplication(tra *model.TransactionAppl
 	return nil
 }
 
+func (taRepo *transactionApplyImpl) UpdateStatusOjk(tra *model.TransactionApply) error {
+	tx, err := taRepo.db.Begin()
+	if err != nil {
+		return fmt.Errorf("UpdateStatusOjk() Begin : %w", err)
+	}
+
+	qry := utils.UPDATE_OJK_STATUS_TRANSACTION_APPLICATION
+
+	_, err = tx.Exec(qry, &tra.OjkStatusId, &tra.Id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("UpdateStatusOjk() Detail : %w", err)
+	}
+	tx.Commit()
+
+	return nil
+}
 
 
 func NewTransactionApplyRepo(db *sql.DB) TransactionApplyRepo {

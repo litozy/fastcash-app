@@ -22,7 +22,7 @@ type ojkStatusRepoImpl struct {
 // OJK STATUS HANYA MEMPUNYAI FUNGSI VIEW DAN CREATE
 
 func (ojkstatRepo *ojkStatusRepoImpl) GetOjkStatusById(id int) (*model.OjkStatusModel, error) {
-	qry := utils.GET_LOAN_PRODUCT_BY_ID
+	qry := utils.GET_OJK_STATUS_BY_ID
 	ojkstat := &model.OjkStatusModel{}
 	err := ojkstatRepo.db.QueryRow(qry, id).Scan(&ojkstat.Id, &ojkstat.Status, &ojkstat.Description)
 	if err != nil {
@@ -35,7 +35,7 @@ func (ojkstatRepo *ojkStatusRepoImpl) GetOjkStatusById(id int) (*model.OjkStatus
 }
 
 func (ojkstatRepo *ojkStatusRepoImpl) GetAllOjkStatus() ([]*model.OjkStatusModel, error) {
-	qry := utils.GET_ALL_LOAN_PRODUCT
+	qry := utils.GET_ALL_OJK_STATUS
 	var arrOjkStatus []*model.OjkStatusModel
 	rows, err := ojkstatRepo.db.Query(qry)
 	if err != nil {
@@ -52,7 +52,7 @@ func (ojkstatRepo *ojkStatusRepoImpl) GetAllOjkStatus() ([]*model.OjkStatusModel
 }
 
 func (ojkstatRepo *ojkStatusRepoImpl) InsertOjkStatus(ojkstat *model.OjkStatusModel) error {
-	qry := utils.INSERT_LOAN_PRODUCT
+	qry := utils.INSERT_OJK_STATUS
 	_, err := ojkstatRepo.db.Exec(qry, ojkstat.Status, ojkstat.Description)
 	if err != nil {
 		return fmt.Errorf("error on ojkStatusRepoImpl.InsertOjkStatus() : %w", err)

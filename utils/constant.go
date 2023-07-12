@@ -9,6 +9,22 @@ const (
 	SELECT_USER_BY_NAME = "SELECT id, user_name, password, created_at, updated_at FROM user_credential WHERE username = $1"
 
 	INSERT_TRANSACTION_APPLICATION = "INSERT INTO tx_application(customer_id, loan_product_id, amount, ojk_status_id, date_approval) VALUES($1, $2, $3, $4, $5)"
+	GET_ALL_TRANSACTION_APPLICATION = `
+	SELECT tx.id AS id, tx.customer_id AS custId, c.name AS custName, c.nik AS nik, p.tenor AS tenor, tx.amount AS amount, tx.date_approval, o.status AS status 
+	FROM tx_application AS tx
+	JOIN customer AS c ON tx.customer_id = c.id
+	JOIN ojk_status AS o ON tx.ojk_status_id = o.id 
+	JOIN loan_product AS p ON tx.loan_product_id = p.id
+	`
+	GET_TRANSACTION_APPLICATION_BY_ID = `
+	SELECT tx.id AS id, tx.customer_id AS custId, c.name AS custName, c.nik AS nik, p.tenor AS tenor, tx.amount AS amount, tx.date_approval, o.status AS status 
+	FROM tx_application AS tx
+	JOIN customer AS c ON tx.customer_id = c.id
+	JOIN ojk_status AS o ON tx.ojk_status_id = o.id 
+	JOIN loan_product AS p ON tx.loan_product_id = p.id
+	WHERE tx.id = $1
+	`
+	UPDATE_OJK_STATUS_TRANSACTION_APPLICATION = "UPDATE tx_application SET ojk_status_id = $1 WHERE id = $2"
 
 	GET_ALL_LOAN_PRODUCT   = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product ORDER BY id ASC"
 	GET_LOAN_PRODUCT_BY_ID = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product WHERE id = $1"
@@ -18,7 +34,7 @@ const (
 
 	GET_ALL_OJK_STATUS   = "SELECT id, status, description FROM ojk_status ORDER BY id ASC"
 	GET_OJK_STATUS_BY_ID = "SELECT id, status, description FROM ojk_status WHERE id = $1"
-	INSERT_OJK_STATUS    = "INSERT INTO ojk_status (status, description) VALUES ($1)"
+	INSERT_OJK_STATUS    = "INSERT INTO ojk_status (status, description) VALUES ($1, $2)"
 	DELETE_OJK_STATUS    = "DELETE FROM ojk_status WHERE id =$1 "
 	UPDATE_OJK_STATUS    = "UPDATE ojk_status SET status = $2, description $3 WHERE id = $1 "
 

@@ -35,6 +35,16 @@ func (usrUsecase *userUsecaseImpl) GetUserByName(name string) (*model.UserModel,
 }
 
 func (usrUsecase *userUsecaseImpl) InsertUser(usr *model.UserModel) error {
+	usr, err := usrUsecase.usrRepo.GetUserByName(usr.UserName)
+	if err != nil {
+		return fmt.Errorf("usrUsecase.usrRepo.GetUserByName() : %w" , err)
+	}
+	if usr != nil {
+		return apperror.AppError{
+			ErrorCode: 400,
+			ErrorMessage: fmt.Sprintf("data user dengan nama : %s sudah ada", usr.UserName),
+		}
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(usr.Password),bcrypt.DefaultCost)  //hashing
 	if err != nil {
 		return nil

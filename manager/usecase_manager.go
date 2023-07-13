@@ -83,7 +83,7 @@ func (um *usecaseManager) GetTransactionPayUsecase() usecase.TransactionPaymentU
 
 func (um *usecaseManager) GetCustomerUsecase() usecase.CustomerUsecase {
 	onceLoadCustomerUsecase.Do(func() {
-		um.cstmUsecase = usecase.NewCustomerUsecase(um.repoManager.GetCustomerRepo())
+		um.cstmUsecase = usecase.NewCustomerUsecase(um.repoManager.GetCustomerRepo(), um.repoManager.GetUserRepo())
 	})
 	return um.cstmUsecase
 }

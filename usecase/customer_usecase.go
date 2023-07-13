@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+	"peminjaman/apperror"
 	"peminjaman/model"
 	"peminjaman/repo"
 )
@@ -14,6 +16,7 @@ type CustomerUsecase interface {
 }
 type customerUsecaseImpl struct {
 	cstmRepo repo.CustomerRepo
+	usrRepo repo.UserRepo
 }
 
 func (cstmUsecase *customerUsecaseImpl) GetCustomerById(id int) (*model.CustomerModel, error) {
@@ -25,6 +28,16 @@ func (cstmUsecase *customerUsecaseImpl) GetAllCustomer() ([]*model.CustomerModel
 }
 
 func (cstmUsecase *customerUsecaseImpl) InsertCustomer(cstm *model.CustomerModel) error {
+	usrDB, err := cstmUsecase.usrRepo.GetUserById(cstm.UserId)
+	if err != nil {
+		return fmt.Errorf("failed to get transaction id: %v", err)
+	}
+	if usrDB == nil {
+		return apperror.AppError{
+			ErrorCode: 1,
+			ErrorMessage: fmt.Sprintf("data user dengan id %v tidak ada", cstm.UserId),
+		}
+	}
 	return cstmUsecase.cstmRepo.InsertCustomer(cstm)
 }
 
@@ -36,8 +49,9 @@ func (cstmUsecase *customerUsecaseImpl) UpdateCustomer(cstm *model.CustomerModel
 	return cstmUsecase.cstmRepo.UpdateCustomer(cstm)
 }
 
-func NewCustomerUsecase(cstmRepo repo.CustomerRepo) CustomerUsecase {
+func NewCustomerUsecase(cstmRepo repo.CustomerRepo, usrRepo repo.UserRepo) CustomerUsecase {
 	return &customerUsecaseImpl{
 		cstmRepo: cstmRepo,
+		usrRepo: usrRepo,
 	}
 }

@@ -12,6 +12,7 @@ type UserRepo interface {
 	GetAllUser() ([]model.UserModel, error)
 	GetUserByName(string) (*model.UserModel, error)
 	InsertUser(*model.UserModel) error
+	GetUserById(int) (*model.UserModel, error)
 }
 
 type userRepoImpl struct {
@@ -54,6 +55,20 @@ func (usrRepo *userRepoImpl) GetUserByName(name string) (*model.UserModel, error
 
 	usr := &model.UserModel{}
 	err := usrRepo.db.QueryRow(qry, name).Scan(&usr.Id, &usr.UserName, &usr.Password, &usr.CreatedAt, &usr.UpdatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("error on serviceRepoImpl.GetUserByName() : %w", err)
+	}
+	return usr, nil
+}
+
+func (usrRepo *userRepoImpl) GetUserById(id int) (*model.UserModel, error) {
+	qry := utils.SELECT_USER_BY_ID
+
+	usr := &model.UserModel{}
+	err := usrRepo.db.QueryRow(qry, id).Scan(&usr.Id, &usr.UserName, &usr.Password, &usr.CreatedAt, &usr.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil

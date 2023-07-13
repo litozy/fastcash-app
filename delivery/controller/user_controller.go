@@ -12,7 +12,6 @@ import (
 )
 
 type UserHandler interface {
-
 }
 
 type userHandlerImpl struct {
@@ -24,14 +23,14 @@ func (usrHandler *userHandlerImpl) GetAllUser(ctx *gin.Context) {
 	if err != nil {
 		fmt.Printf("userHandlerImpl.GetAllUser() : %v", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
+			"success":      false,
 			"errorMessage": "Terjadi kesalahan ketika mengambil data user",
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data" : arrUser,
+		"data":    arrUser,
 		"success": true,
 	})
 }
@@ -67,7 +66,7 @@ func (usrHandler *userHandlerImpl) InsertUser(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&usr)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
+			"success":      false,
 			"errorMessage": "Invalid JSON data",
 		})
 		return
@@ -75,17 +74,17 @@ func (usrHandler *userHandlerImpl) InsertUser(ctx *gin.Context) {
 
 	if len(usr.UserName) > 15 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
+			"success":      false,
 			"errorMessage": "Panjang Nama tidak boleh lebih dari 15 karakter",
 		})
 		return
 	}
 	if usr.UserName == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
+			"success":      false,
 			"errorMessage": "Nama tidak boleh kosong",
 		})
-		return 
+		return
 	}
 
 	err = usrHandler.usrUsecase.InsertUser(&usr)
@@ -95,22 +94,22 @@ func (usrHandler *userHandlerImpl) InsertUser(ctx *gin.Context) {
 		if errors.As(err, &appError) {
 			fmt.Printf("userHandlerImpl.InsertUser() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
+				"success":      false,
 				"errorMessage": appError.Error(),
 			})
 		} else {
 			fmt.Printf("userHandlerImpl.AddUser() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
+				"success":      false,
 				"errorMessage": "Terjadi kesalahan ketika menambahkan data user",
 			})
 		}
-	return
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"successMessage" : "Sukses menambahkan data",
+		"success":        true,
+		"successMessage": "Sukses menambahkan data",
 	})
 }
 
@@ -121,6 +120,6 @@ func NewUserController(srv *gin.Engine, usrUsecase usecase.UserUsecase) UserHand
 	srv.POST("/user", usrHandler.InsertUser)
 	srv.GET("/user", usrHandler.GetAllUser)
 	srv.GET("/users/:name", usrHandler.GetUserByName)
-
-	return usrHandler 
+	srv.GET("/users/a")
+	return usrHandler
 }

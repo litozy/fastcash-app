@@ -29,7 +29,7 @@ FOREIGN KEY (user_id) REFERENCES user_credential(id));
 CREATE TABLE loan_product (
 id SERIAL PRIMARY KEY NOT NULL,
 product_name VARCHAR(50),
-tenor VARCHAR(50),
+tenor INT NOT NULL,
 max_loan FLOAT,
 interest FLOAT,
 late_interest FLOAT);

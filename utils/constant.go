@@ -31,7 +31,43 @@ const (
 	WHERE tx.id = $1
 	`
 	UPDATE_OJK_STATUS_TRANSACTION_APPLICATION = "UPDATE tx_application SET ojk_status_id = $1, update_by = $2 WHERE id = $3"
-	UPDATE_OJK_STATUS_DATE_APPROVAL = "UPDATE tx_application SET date_approval = $1 WHERE id = $2"
+	UPDATE_OJK_STATUS_DATE_APPROVAL           = "UPDATE tx_application SET date_approval = $1 WHERE id = $2"
+
+	INSERT_TRANSACTION_PAYMENT = `
+	INSERT INTO tx_payment(aplication_id, payment, created_by, created_at)
+	SELECT $1, $2, create_by, $3
+	FROM tx_application
+	WHERE id = $4
+	`
+	GET_TRANSACTION_PAYMENT_BY_ID = `
+	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, tx.amount AS amount, 
+    COALESCE(SUM(tp.payment), 0) AS paid, 
+    tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS NeedToPay1Month ,
+    (DATE_TRUNC('month', MAX(tp.created_at)) + INTERVAL '1 month' + INTERVAL '24 days') AS deadlinepayment
+FROM tx_application AS tx
+LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
+JOIN customer AS c ON tx.customer_id = c.id
+JOIN loan_product AS p ON tx.loan_product_id = p.id
+WHERE tx.id = $1
+GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest;
+	`
+	GET_TRANSACTION_PAYMENT_BY_ID_VALIDATE = `
+	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, tx.amount AS amount, 
+    COALESCE(SUM(tp.payment), 0) AS paid, 
+    tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS NeedToPay1Month
+FROM tx_application AS tx
+LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
+JOIN customer AS c ON tx.customer_id = c.id
+JOIN loan_product AS p ON tx.loan_product_id = p.id
+WHERE tx.id = $1
+GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest;
+	`
+
+	GET_ALL_CUSTOMER   = "SELECT id, user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status FROM customer ORDER BY id ASC"
+	GET_CUSTOMER_BY_ID = "SELECT id, user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status FROM customer WHERE id = $1"
+	INSERT_CUSTOMER    = "INSERT INTO customer (user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
+	DELETE_CUSTOMER    = "DELETE FROM customer WHERE id=$1)"
+	UPDATE_CUSTOMER    = "UPDATE customer SET user_id = $2, name = $3, address = $4, nik = $5, birthdate = $6, family_member = $7, family_phone = $8, family_address = $9, status = $10 WHERE id = $1"
 
 	GET_ALL_LOAN_PRODUCT   = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product ORDER BY id ASC"
 	GET_LOAN_PRODUCT_BY_ID = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product WHERE id = $1"
@@ -45,7 +81,4 @@ const (
 	DELETE_OJK_STATUS    = "DELETE FROM ojk_status WHERE id =$1 "
 	UPDATE_OJK_STATUS    = "UPDATE ojk_status SET status = $1, description $2 WHERE id = $3 "
 
-	GET_ALL_TX_LOAN_APPLICATION   = "SELECT id, customer_id, loan_product_id, amount, ojk_status_id, date_approval,created_by, updated_by FROM tx_application ORDER BY ASC"
-	GET_TX_LOAN_APPLICATION_BY_ID = "SELECT id, customer_id, loan_product_id, amount, ojk_status_id, date_approval,created_by, updated_by FROM tx_application WHERE id = $1"
-	INSERT_TX_LOAN_APPLICATION    = "INSERT INTO tx_application (customer_id, loan_product_id, amount, ojk_status_id, date_approval,created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 )

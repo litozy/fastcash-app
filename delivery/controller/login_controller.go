@@ -22,12 +22,12 @@ func (lgController loginControllerImpl) Login(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&loginData)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"errorMessage" : "Invalid JSON data",
+			"success":      false,
+			"errorMessage": "Invalid JSON data",
 		})
 		return
 	}
-	
+
 	err = lgController.lgUsecase.GetUserByNameAndPassword(loginData.Username, loginData.Password)
 	if err != nil {
 
@@ -35,17 +35,17 @@ func (lgController loginControllerImpl) Login(ctx *gin.Context) {
 		if errors.As(err, &appError) {
 			fmt.Printf("loginHandlerImpl.Login() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
+				"success":      false,
 				"errorMessage": appError.ErrorMessage,
 			})
 		} else {
 			fmt.Printf("loginHandlerImpl.Login() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
+				"success":      false,
 				"errorMessage": "Terjadi kesalahan ketika login",
 			})
 		}
-	return
+		return
 	}
 
 	temp, err := authutil.GenerateToken(loginData.Username)
@@ -53,7 +53,7 @@ func (lgController loginControllerImpl) Login(ctx *gin.Context) {
 		log.Println("Token Invalid")
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"token" : temp,
+		"token": temp,
 	})
 }
 

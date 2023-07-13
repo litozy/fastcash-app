@@ -58,7 +58,7 @@ func (taRepo *transactionApplyImpl) GetAppById(id int) (*model.TransactionApplyV
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("error on serviceRepoImpl.GetServiceById() : %w", err)
+		return nil, fmt.Errorf("error on transactionApplyImpl.GetAppById() : %w", err)
 	}
 	tra.DateApproval = date.Format("2006-01-02")
 	return tra, nil

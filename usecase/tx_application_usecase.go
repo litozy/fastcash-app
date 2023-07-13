@@ -18,6 +18,7 @@ type transactionApplyUsecaseImpl struct {
 	taRepo repo.TransactionApplyRepo
 	lpRepo repo.LoanProductRepo
 	ojkRepo repo.OjkStatusRepo
+	cstRepo repo.CustomerRepo
 }
 
 func (taUsecase *transactionApplyUsecaseImpl) GetTransactionApplyById(id int) (*model.TransactionApplyView, error) {
@@ -39,6 +40,29 @@ func (taUsecase *transactionApplyUsecaseImpl) GetAllApp() ([]model.TransactionAp
 }
 
 func (taUsecase *transactionApplyUsecaseImpl) InsertApplication(tra *model.TransactionApply) error {
+	cust, err := taUsecase.cstRepo.GetCustomerById(tra.CustomerId)
+	if err != nil {
+		return fmt.Errorf("failed to get loan customer: %v", err)
+	}
+	if cust == nil {
+		return apperror.AppError{
+			ErrorCode: 1,
+			ErrorMessage: fmt.Sprintf("data customer dengan id %v tidak ada", tra.CustomerId),
+		}
+	}
+	if cust.Status == "Pending" {
+		return apperror.AppError{
+			ErrorCode: 1,
+			ErrorMessage: "Status anda masih pending mohon ditunggu",
+		}
+	}
+	if cust.Status == "Rejected" {
+		return apperror.AppError{
+			ErrorCode: 1,
+			ErrorMessage: "Status anda rejected mohon diperiksa kembali",
+		}
+	}
+
 	loanProduct, err := taUsecase.lpRepo.GetLoanProductById(tra.ProductId)
 	if err != nil {
 		return fmt.Errorf("failed to get loan product: %v", err)
@@ -61,6 +85,7 @@ func (taUsecase *transactionApplyUsecaseImpl) InsertApplication(tra *model.Trans
 			ErrorMessage: "peminjaman tidak boleh kurang dari 0",
 		}
 	}
+	
 
 	// Melakukan penyisipan aplikasi transaksi menggunakan repositori transaksi
 	err = taUsecase.taRepo.InsertApplication(tra)
@@ -98,10 +123,11 @@ func (taUsecase *transactionApplyUsecaseImpl) UpdateStatusOjk(tra *model.Transac
 	return nil
 }
 
-func NewTransactionApplyUsecase(taRepo repo.TransactionApplyRepo, lpRepo repo.LoanProductRepo, ojkRepo repo.OjkStatusRepo) TransactionApplyUsecase {
+func NewTransactionApplyUsecase(taRepo repo.TransactionApplyRepo, lpRepo repo.LoanProductRepo, ojkRepo repo.OjkStatusRepo, cstRepo repo.CustomerRepo) TransactionApplyUsecase {
 	return &transactionApplyUsecaseImpl{
 		taRepo: taRepo,
 		lpRepo: lpRepo,
 		ojkRepo: ojkRepo,
+		cstRepo: cstRepo,
 	}
 }

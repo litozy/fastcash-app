@@ -11,6 +11,7 @@ type RepoManager interface {
 	GetLoanProductRepo() repo.LoanProductRepo
 	GetOjkStatusRepo() repo.OjkStatusRepo
 	GetTransactionPayRepo() repo.TransactionPaymentRepo
+	GetCustomerRepo() repo.CustomerRepo
 }
 
 type repoManager struct {
@@ -21,6 +22,7 @@ type repoManager struct {
 	ojkstatRepo repo.OjkStatusRepo
 	taRepo 		repo.TransactionApplyRepo
 	trpRepo 	repo.TransactionPaymentRepo
+	cstmRepo    repo.CustomerRepo
 }
 
 var onceLoadTrxApplyRepo sync.Once
@@ -28,7 +30,7 @@ var onceLoadTrxPaymentRepo sync.Once
 var onceLoadUserRepo sync.Once
 var onceLoadLoanProductRepo sync.Once
 var onceLoadOjkStatusRepo sync.Once
-
+var onceLoadCustomerRepo sync.Once
 
 func (rm *repoManager) GetUserRepo() repo.UserRepo {
 	onceLoadUserRepo.Do(func() {
@@ -54,6 +56,12 @@ func (rm *repoManager) GetTransactionAppRepo() repo.TransactionApplyRepo {
 		rm.taRepo = repo.NewTransactionApplyRepo(rm.infraManager.GetDB())
 	})
 	return rm.taRepo
+}
+func (rm *repoManager) GetCustomerRepo() repo.CustomerRepo {
+	onceLoadCustomerRepo.Do(func() {
+		rm.cstmRepo = repo.NewCustomerRepo(rm.infraManager.GetDB())
+	})
+	return rm.cstmRepo
 }
 
 func (rm *repoManager) GetTransactionPayRepo() repo.TransactionPaymentRepo {

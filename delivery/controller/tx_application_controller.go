@@ -39,7 +39,7 @@ func (taController *transactionApplyControllerImpl) GetAppById(ctx *gin.Context)
 		return
 	}
 
-	svc, err := taController.taUsecase.GetTransactionApplyById(id)
+	tra, err := taController.taUsecase.GetTransactionApplyById(id)
 	if err != nil {
 		appError := apperror.AppError{}
 		if errors.As(err, &appError) {
@@ -50,7 +50,7 @@ func (taController *transactionApplyControllerImpl) GetAppById(ctx *gin.Context)
 			})
 			return
 		} else {
-			fmt.Printf("serviceHandlerImpl.GetServiceById() : %v", err.Error())
+			fmt.Printf("transactionApplyControllerImpl.GetAppById() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"errorMessage": "Terjadi kesalahan ketika mengambil data transaksi",
@@ -60,7 +60,7 @@ func (taController *transactionApplyControllerImpl) GetAppById(ctx *gin.Context)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data" : svc,
+		"data" : tra,
 		"success": true,
 	})
 

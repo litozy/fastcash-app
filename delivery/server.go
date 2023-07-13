@@ -18,15 +18,16 @@ type server struct {
 
 func (s *server) Run() {
 	s.srv.Use(controller.LoggerMiddleware())
+	s.srv.LoadHTMLGlob("./view/*")
 	controller.NewUserController(s.srv, s.usecaseManager.GetUserUsecase())
 	controller.NewLoginController(s.srv, s.usecaseManager.GetLoginUsecase())
 	controller.NewTransactionApplyController(s.srv, s.usecaseManager.GetTransactionAppUsecase())
 	controller.NewLoanProductHandler(s.srv, s.usecaseManager.GetLoanProductUsecase())
 	controller.NewOjkStatusHandler(s.srv, s.usecaseManager.GetOjkStatusUsecase())
 	controller.NewTransactionPaymentController(s.srv, s.usecaseManager.GetTransactionPayUsecase())
-
-
+	controller.NewCustomerHandler(s.srv, s.usecaseManager.GetCustomerUsecase())
 	s.srv.Run()
+
 }
 
 func NewServer() Server {
@@ -35,7 +36,6 @@ func NewServer() Server {
 	usecase := manager.NewUsecaseManager(repo)
 
 	srv := gin.Default()
-
 	return &server{
 		usecaseManager: usecase,
 		srv:            srv,

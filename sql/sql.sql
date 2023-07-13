@@ -36,7 +36,8 @@ late_interest FLOAT);
 
 CREATE TABLE ojk_status (
 id SERIAL PRIMARY KEY NOT NULL,
-status INT NOT NULL);
+status INT NOT NULL
+description VARCHAR (50) NOT NULL);
 
 CREATE TABLE tx_application (
 id SERIAL PRIMARY KEY NOT NULL,

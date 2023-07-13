@@ -10,6 +10,7 @@ type RepoManager interface {
 	GetTransactionAppRepo() repo.TransactionApplyRepo
 	GetLoanProductRepo() repo.LoanProductRepo
 	GetOjkStatusRepo() repo.OjkStatusRepo
+	GetTransactionPayRepo() repo.TransactionPaymentRepo
 }
 
 type repoManager struct {
@@ -18,10 +19,12 @@ type repoManager struct {
 	usrRepo     repo.UserRepo
 	lprdctRepo  repo.LoanProductRepo
 	ojkstatRepo repo.OjkStatusRepo
-	taRepo repo.TransactionApplyRepo
+	taRepo 		repo.TransactionApplyRepo
+	trpRepo 	repo.TransactionPaymentRepo
 }
 
 var onceLoadTrxApplyRepo sync.Once
+var onceLoadTrxPaymentRepo sync.Once
 var onceLoadUserRepo sync.Once
 var onceLoadLoanProductRepo sync.Once
 var onceLoadOjkStatusRepo sync.Once
@@ -51,6 +54,13 @@ func (rm *repoManager) GetTransactionAppRepo() repo.TransactionApplyRepo {
 		rm.taRepo = repo.NewTransactionApplyRepo(rm.infraManager.GetDB())
 	})
 	return rm.taRepo
+}
+
+func (rm *repoManager) GetTransactionPayRepo() repo.TransactionPaymentRepo {
+	onceLoadTrxPaymentRepo.Do(func() {
+		rm.trpRepo = repo.NewTransactionPaymentRepo(rm.infraManager.GetDB())
+	})
+	return rm.trpRepo
 }
 
 func NewRepoManager(infraManager InfraManager) RepoManager {

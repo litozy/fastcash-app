@@ -23,6 +23,8 @@ func (s *server) Run() {
 	controller.NewTransactionApplyController(s.srv, s.usecaseManager.GetTransactionAppUsecase())
 	controller.NewLoanProductHandler(s.srv, s.usecaseManager.GetLoanProductUsecase())
 	controller.NewOjkStatusHandler(s.srv, s.usecaseManager.GetOjkStatusUsecase())
+	controller.NewTransactionPaymentController(s.srv, s.usecaseManager.GetTransactionPayUsecase())
+
 
 	s.srv.Run()
 }

@@ -73,7 +73,6 @@ func (taController *transactionApplyControllerImpl) GetAllApp(ctx *gin.Context) 
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"errorMessage": "Terjadi kesalahan ketika mengambil data transaksi application",
-			"errorCode": err.Error(),
 		})
 		return
 	}
@@ -106,11 +105,10 @@ func (taController *transactionApplyControllerImpl) InsertApplication(ctx *gin.C
 			})
 		
 		} else {
-			fmt.Printf("serviceHandlerImpl.AddService() : %v", err.Error())
+			fmt.Printf("serviceHandlerImpl.InsertPayment() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"errorMessage": "Terjadi kesalahan ketika menambahkan data service",
-				"error": err.Error(),
+				"errorMessage": "Terjadi kesalahan ketika menambahkan data transaksi application",
 			})
 		
 		}
@@ -144,11 +142,10 @@ func (taController *transactionApplyControllerImpl) UpdateStatusOjk(ctx *gin.Con
 				"errorMessage": appError.ErrorMessage,
 			})
 		} else {
-			fmt.Printf("serviceHandlerImpl.AddService() : %v", err.Error())
+			fmt.Printf("transactionApplyControllerImpl.AddService() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"errorMessage": "Terjadi kesalahan ketika mengubah data transaksi",
-				"error": err.Error(),
 			})
 		
 		}

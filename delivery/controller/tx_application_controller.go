@@ -158,6 +158,43 @@ func (taController *transactionApplyControllerImpl) UpdateStatusOjk(ctx *gin.Con
 	})
 }
 
+func (taController *transactionApplyControllerImpl) UpdateAmountForLateInterest(ctx *gin.Context) {
+	tra := &model.TransactionApply{}
+	err := ctx.ShouldBindJSON(&tra)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"errorMessage": "Invalid JSON data",
+		})
+		return
+	}
+
+	err = taController.taUsecase.UpdateAmountForLateInterest(tra)
+	if err != nil {
+		appError := apperror.AppError{}
+		if errors.As(err, &appError) {
+			fmt.Printf("transactionApplyControllerImpl.UpdateAmountForLateInterest() : %v", err.Error())
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"errorMessage": appError.ErrorMessage,
+			})
+		} else {
+			fmt.Printf("transactionApplyControllerImpl.UpdateAmountForLateInterest() : %v", err.Error())
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"errorMessage": "Terjadi kesalahan ketika mengubah data transaksi",
+			})
+		
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"successMessage": "Success mengubah data",
+		"success" : true,
+		
+	})
+}
+
 func NewTransactionApplyController(srv *gin.Engine, taUsecase usecase.TransactionApplyUsecase) TransactionApplyController {
 	taController := &transactionApplyControllerImpl{
 		taUsecase: taUsecase,
@@ -167,6 +204,7 @@ func NewTransactionApplyController(srv *gin.Engine, taUsecase usecase.Transactio
 	srv.GET("/application", taController.GetAllApp)
 	srv.GET("/application/:id", taController.GetAppById)
 	srv.PUT("/statusUpdate", taController.UpdateStatusOjk)
+	srv.PUT("/lateinterest", taController.UpdateAmountForLateInterest)
 	
 	return taController
 }

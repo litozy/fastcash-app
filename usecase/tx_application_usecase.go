@@ -12,6 +12,7 @@ type TransactionApplyUsecase interface {
 	GetAllApp() ([]model.TransactionApplyView, error)
 	GetTransactionApplyById(int) (*model.TransactionApplyView, error)
 	UpdateStatusOjk(*model.TransactionApply) error
+	UpdateAmountForLateInterest(*model.TransactionApply) error
 }
 
 type transactionApplyUsecaseImpl struct {
@@ -121,6 +122,10 @@ func (taUsecase *transactionApplyUsecaseImpl) UpdateStatusOjk(tra *model.Transac
 	}
 
 	return nil
+}
+
+func (taUsecase *transactionApplyUsecaseImpl) UpdateAmountForLateInterest(tra *model.TransactionApply) error {
+	return taUsecase.taRepo.UpdateAmountForLateInterest(tra)
 }
 
 func NewTransactionApplyUsecase(taRepo repo.TransactionApplyRepo, lpRepo repo.LoanProductRepo, ojkRepo repo.OjkStatusRepo, cstRepo repo.CustomerRepo) TransactionApplyUsecase {

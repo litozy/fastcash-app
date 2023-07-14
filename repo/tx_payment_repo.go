@@ -44,7 +44,7 @@ func (taRepo *transactionPaymentImpl) GetPaymentViewById(id int) (*model.Transac
 	trp := &model.TransactionPaymentView{}
 	trp.CompanyBankAccount = 7040594095
 	var date time.Time
-	err := taRepo.db.QueryRow(qry, id).Scan(&trp.CustomerId, &trp.CustomerName, &trp.Product, &trp.Amount, &trp.Paid, &trp.RemainingPayment, &trp.NeedToPayThisMonth, &date)
+	err := taRepo.db.QueryRow(qry, id).Scan(&trp.CustomerId, &trp.CustomerName, &trp.Product, &trp.MustToPay, &trp.Paid, &trp.RemainingPayment, &trp.OneMonthPayment, &date)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -58,7 +58,7 @@ func (taRepo *transactionPaymentImpl) GetPaymentViewById(id int) (*model.Transac
 func (taRepo *transactionPaymentImpl) GetPaymentValidateById(id int) (*model.TransactionPaymentView, error) {
 	qry := utils.GET_TRANSACTION_PAYMENT_BY_ID_VALIDATE
 	trp := &model.TransactionPaymentView{}
-	err := taRepo.db.QueryRow(qry, id).Scan(&trp.CustomerId, &trp.CustomerName, &trp.Product, &trp.Amount, &trp.Paid, &trp.RemainingPayment, &trp.NeedToPayThisMonth)
+	err := taRepo.db.QueryRow(qry, id).Scan(&trp.CustomerId, &trp.CustomerName, &trp.Product, &trp.MustToPay, &trp.Paid, &trp.RemainingPayment, &trp.OneMonthPayment)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil

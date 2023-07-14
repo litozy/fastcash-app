@@ -41,21 +41,21 @@ const (
 	WHERE id = $5
 	`
 	GET_TRANSACTION_PAYMENT_BY_ID = `
-	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, tx.amount AS amount, 
+	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, (tx.amount) * (p.interest / 100) + (tx.amount) AS MustToPay, 
     COALESCE(SUM(tp.payment), 0) AS paid, 
     tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS NeedToPay1Month ,
-    (DATE_TRUNC('month', MAX(tp.created_at)) + INTERVAL '1 month' + INTERVAL '24 days') AS deadlinepayment
+    (DATE_TRUNC('month', tx.date_approval) + INTERVAL '25 days' + INTERVAL '1 month' * (p.tenor)) AS deadlinepayment
 FROM tx_application AS tx
 LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
 JOIN customer AS c ON tx.customer_id = c.id
 JOIN loan_product AS p ON tx.loan_product_id = p.id
 WHERE tx.id = $1
-GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest;
+GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest, tx.date_approval;
 	`
 	GET_TRANSACTION_PAYMENT_BY_ID_VALIDATE = `
-	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, tx.amount AS amount, 
+	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, (tx.amount) * (p.interest / 100) + (tx.amount) AS MustToPay, 
     COALESCE(SUM(tp.payment), 0) AS paid, 
-    tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS NeedToPay1Month
+    tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS OneMonthPayment
 FROM tx_application AS tx
 LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
 JOIN customer AS c ON tx.customer_id = c.id

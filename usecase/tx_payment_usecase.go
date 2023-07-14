@@ -56,17 +56,17 @@ func (trpUsecase *transactionPaymentUsecaseImpl) InsertPayment(trp *model.Transa
 		}
 	}
 
-	valid, err := trpUsecase.trpRepo.GetPaymentValidateById(trp.ApplicationId)
+	valid, err := trpUsecase.trpRepo.GetPaymentViewById(trp.ApplicationId)
 	if err != nil {
 		return fmt.Errorf("failed to get transaction id: %v", err)
 	}
-	if trp.Payment != valid.NeedToPayThisMonth {
+	if trp.Payment != valid.OneMonthPayment {
 		return apperror.AppError{
 			ErrorCode: 1,
-			ErrorMessage: fmt.Sprintf("pembayaran harus sesuai dengan yang tertera, yaitu: %v", valid.NeedToPayThisMonth),
+			ErrorMessage: fmt.Sprintf("pembayaran harus sesuai dengan yang tertera, yaitu: %v", valid.OneMonthPayment),
 		}
 	}
-	if valid.Paid == valid.Amount {
+	if valid.Paid == valid.MustToPay {
 		return apperror.AppError{
 			ErrorCode: 1,
 			ErrorMessage: "pembayaran sudah selesai",

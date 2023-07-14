@@ -39,10 +39,10 @@ type TransactionPaymentView struct {
 	CustomerId int
 	CustomerName string
 	Product string
-	Amount float64
+	MustToPay float64
 	Paid float64
 	RemainingPayment float64
-	NeedToPayThisMonth float64
+	OneMonthPayment float64
 	CompanyBankAccount int
 	PaymentDeadline string
 }

@@ -13,6 +13,7 @@ type TransactionApplyRepo interface {
 	GetAllApp() ([]model.TransactionApplyView, error)
 	GetAppById(int) (*model.TransactionApplyView, error)
 	UpdateStatusOjk(*model.TransactionApply) error
+	UpdateAmountForLateInterest(*model.TransactionApply) error
 }
 
 type transactionApplyImpl struct {
@@ -107,6 +108,24 @@ func (taRepo *transactionApplyImpl) UpdateStatusOjk(tra *model.TransactionApply)
 		tx.Rollback()
 		return fmt.Errorf("UpdateStatusOjk.DateApproval() Detail : %w", err)
 	}
+	}
+	tx.Commit()
+
+	return nil
+}
+
+func (taRepo *transactionApplyImpl) UpdateAmountForLateInterest(tra *model.TransactionApply) error {
+	tx, err := taRepo.db.Begin()
+	if err != nil {
+		return fmt.Errorf("UpdateAmountForLateInterest() Begin : %w", err)
+	}
+
+	qry := "UPDATE tx_application SET amount = amount + (amount * (SELECT late_interest FROM loan_product) / 100) WHERE id = $1"
+
+	_, err = tx.Exec(qry, &tra.Id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("UpdateAmountForLateInterest() Detail : %w", err)
 	}
 	tx.Commit()
 

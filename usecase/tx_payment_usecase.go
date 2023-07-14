@@ -10,6 +10,7 @@ import (
 type TransactionPaymentUsecase interface {
 	InsertPayment(*model.TransactionPayment) error
 	GetTransactionPaymentViewById(int) (*model.TransactionPaymentView, error)
+	UpdateStatus(*model.TransactionPayment) error
 }
 
 type transactionPaymentUsecaseImpl struct {
@@ -78,6 +79,10 @@ func (trpUsecase *transactionPaymentUsecaseImpl) InsertPayment(trp *model.Transa
 	}
 
 	return nil
+}
+
+func (trpUsecase *transactionPaymentUsecaseImpl) UpdateStatus(trp *model.TransactionPayment) error {
+	return trpUsecase.trpRepo.UpdateStatusPayment(trp)
 }
 
 func NewTransactionPaymentUsecase(trpRepo repo.TransactionPaymentRepo, taRepo repo.TransactionApplyRepo) TransactionPaymentUsecase {

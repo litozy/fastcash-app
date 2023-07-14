@@ -105,6 +105,43 @@ func (trpController *transactionPaymentControllerImpl) InsertPayment(ctx *gin.Co
 	})
 }
 
+func (trpController *transactionPaymentControllerImpl) UpdateStatus(ctx *gin.Context) {
+	trp := &model.TransactionPayment{}
+	err := ctx.ShouldBindJSON(&trp)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"errorMessage": "Invalid JSON data",
+		})
+		return
+	}
+
+	err = trpController.trpUsecase.UpdateStatus(trp)
+	if err != nil {
+		appError := apperror.AppError{}
+		if errors.As(err, &appError) {
+			fmt.Printf("transactionPaymentControllerImpl.UpdateStatus() : %v", err.Error())
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"errorMessage": appError.ErrorMessage,
+			})
+		} else {
+			fmt.Printf("transactionPaymentControllerImpl.UpdateStatus() : %v", err.Error())
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"errorMessage": "Terjadi kesalahan ketika mengubah data transaksi",
+			})
+		
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"successMessage": "Success mengubah data",
+		"success" : true,
+		
+	})
+}
+
 func NewTransactionPaymentController(srv *gin.Engine, trpUsecase usecase.TransactionPaymentUsecase) TransactionPaymentController {
 	trpController := &transactionPaymentControllerImpl{
 		trpUsecase: trpUsecase,
@@ -112,6 +149,7 @@ func NewTransactionPaymentController(srv *gin.Engine, trpUsecase usecase.Transac
 
 	srv.POST("/payment", trpController.InsertPayment)
 	srv.GET("/payment/:id", trpController.GetPaymentById)
+	srv.PUT("/paymentStatus", trpController.UpdateStatus)
 
 	return trpController
 }

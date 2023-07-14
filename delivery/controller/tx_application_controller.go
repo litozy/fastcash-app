@@ -142,7 +142,7 @@ func (taController *transactionApplyControllerImpl) UpdateStatusOjk(ctx *gin.Con
 				"errorMessage": appError.ErrorMessage,
 			})
 		} else {
-			fmt.Printf("transactionApplyControllerImpl.AddService() : %v", err.Error())
+			fmt.Printf("transactionApplyControllerImpl.UpdateStatusOjk() : %v", err.Error())
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"errorMessage": "Terjadi kesalahan ketika mengubah data transaksi",

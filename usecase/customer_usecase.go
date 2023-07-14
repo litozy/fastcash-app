@@ -12,7 +12,8 @@ type CustomerUsecase interface {
 	GetAllCustomer() ([]*model.CustomerModel, error)
 	InsertCustomer(*model.CustomerModel) error
 	DeleteCustomer(int) error
-	UpdateCustomer(cstm *model.CustomerModel) error
+	UpdateCustomer(*model.CustomerModel) error
+	UpdateCustomerStatus(*model.CustomerModel) error
 }
 type customerUsecaseImpl struct {
 	cstmRepo repo.CustomerRepo
@@ -47,6 +48,10 @@ func (cstmUsecase *customerUsecaseImpl) DeleteCustomer(id int) error {
 
 func (cstmUsecase *customerUsecaseImpl) UpdateCustomer(cstm *model.CustomerModel) error {
 	return cstmUsecase.cstmRepo.UpdateCustomer(cstm)
+}
+
+func (cstmUsecase *customerUsecaseImpl) UpdateCustomerStatus(cstm *model.CustomerModel) error {
+	return cstmUsecase.cstmRepo.UpdateStatusCustomer(cstm)
 }
 
 func NewCustomerUsecase(cstmRepo repo.CustomerRepo, usrRepo repo.UserRepo) CustomerUsecase {

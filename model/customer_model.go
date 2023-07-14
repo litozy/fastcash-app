@@ -8,6 +8,7 @@ type CustomerModel struct {
 	Name          string
 	Address       string
 	NIK           int
+	BankAccount int
 	Birthdate     time.Time
 	FamilyMember  string
 	FamilyPhone   string

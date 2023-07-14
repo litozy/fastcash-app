@@ -12,6 +12,7 @@ type TransactionPaymentRepo interface {
 	InsertPayment(*model.TransactionPayment) error
 	GetPaymentViewById(int) (*model.TransactionPaymentView, error)
 	GetPaymentValidateById(id int) (*model.TransactionPaymentView, error)
+	UpdateStatusPayment(*model.TransactionPayment) error
 }
 
 type transactionPaymentImpl struct {
@@ -26,8 +27,9 @@ func (taRepo *transactionPaymentImpl) InsertPayment(trp *model.TransactionPaymen
 
 	qry := utils.INSERT_TRANSACTION_PAYMENT
 
+	trp.Status = "checking"
 	trp.CreatedAt = time.Now()
-	_, err = tx.Exec(qry, &trp.ApplicationId, &trp.Payment, trp.CreatedAt, &trp.ApplicationId)
+	_, err = tx.Exec(qry, &trp.ApplicationId, &trp.Payment, trp.CreatedAt, &trp.ApplicationId, trp.Status)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("InsertTransaction() Detail : %w", err)
@@ -40,6 +42,7 @@ func (taRepo *transactionPaymentImpl) InsertPayment(trp *model.TransactionPaymen
 func (taRepo *transactionPaymentImpl) GetPaymentViewById(id int) (*model.TransactionPaymentView, error) {
 	qry := utils.GET_TRANSACTION_PAYMENT_BY_ID
 	trp := &model.TransactionPaymentView{}
+	trp.CompanyBankAccount = 7040594095
 	var date time.Time
 	err := taRepo.db.QueryRow(qry, id).Scan(&trp.CustomerId, &trp.CustomerName, &trp.Product, &trp.Amount, &trp.Paid, &trp.RemainingPayment, &trp.NeedToPayThisMonth, &date)
 	if err != nil {
@@ -64,6 +67,24 @@ func (taRepo *transactionPaymentImpl) GetPaymentValidateById(id int) (*model.Tra
 	}
 
 	return trp, nil
+}
+
+func (taRepo *transactionPaymentImpl) UpdateStatusPayment(trp *model.TransactionPayment) error {
+	tx, err := taRepo.db.Begin()
+	if err != nil {
+		return fmt.Errorf("UpdateStatusPayment() Begin : %w", err)
+	}
+
+	qry := utils.UPDATE_TRANSACTION_PAYMENT_STATUS
+
+	_, err = tx.Exec(qry, &trp.Status, &trp.Id)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("UpdateStatusPayment() Detail : %w", err)
+	}
+	tx.Commit()
+
+	return nil
 }
 
 func NewTransactionPaymentRepo(db *sql.DB) TransactionPaymentRepo {

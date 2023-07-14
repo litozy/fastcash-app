@@ -148,6 +148,32 @@ func (cstmHandler CustomerHandler) UpdateCustomer(ctx *gin.Context) {
 	})
 }
 
+func (cstmHandler CustomerHandler) UpdateCustomerStatus(ctx *gin.Context) {
+	cstm := &model.CustomerModel{}
+	err := ctx.ShouldBindJSON(&cstm)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"success":      false,
+			"errorMessage": "Invalid JSON data",
+		})
+		return
+	}
+
+	err = cstmHandler.cstmUsecase.UpdateCustomerStatus(cstm)
+	if err != nil {
+		fmt.Printf("cstmHandler.cstmUseCase.getAllCustomer() : %v", err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success":      false,
+			"errorMessage": "Terjadi kesalahan dalam memperbarui data customer status",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
+}
+
 func NewCustomerHandler(srv *gin.Engine, cstmUsecase usecase.CustomerUsecase) *CustomerHandler {
 	cstmHandler := &CustomerHandler{
 		cstmUsecase: cstmUsecase,
@@ -157,5 +183,6 @@ func NewCustomerHandler(srv *gin.Engine, cstmUsecase usecase.CustomerUsecase) *C
 	srv.POST("/customer", cstmHandler.InsertCustomer)
 	srv.DELETE("/customer/:id", cstmHandler.DeleteCustomer)
 	srv.PUT("/customer", cstmHandler.UpdateCustomer)
+	srv.PUT("/customerStatus", cstmHandler.UpdateCustomerStatus)
 	return cstmHandler
 }

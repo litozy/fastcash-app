@@ -17,11 +17,13 @@ type TransactionApplyView struct {
 	Id           int
 	CustomerId   int
 	CustomerName string
+	CustomerBankAccount int
 	Nik          int
 	Product      int
 	Amount       float64
 	DateApproval string `json:"DateApproval,omitempty"`
 	StatusOjk    int
+	StatusDetail string
 }
 
 type TransactionPayment struct {
@@ -30,6 +32,7 @@ type TransactionPayment struct {
 	Payment       float64
 	CreatedBy     string
 	CreatedAt     time.Time
+	Status string
 }
 
 type TransactionPaymentView struct {
@@ -40,5 +43,6 @@ type TransactionPaymentView struct {
 	Paid float64
 	RemainingPayment float64
 	NeedToPayThisMonth float64
+	CompanyBankAccount int
 	PaymentDeadline string
 }

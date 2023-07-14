@@ -50,13 +50,13 @@ func (taUsecase *transactionApplyUsecaseImpl) InsertApplication(tra *model.Trans
 			ErrorMessage: fmt.Sprintf("data customer dengan id %v tidak ada", tra.CustomerId),
 		}
 	}
-	if cust.Status == "Pending" {
+	if cust.Status == "pending" {
 		return apperror.AppError{
 			ErrorCode: 1,
 			ErrorMessage: "Status anda masih pending mohon ditunggu",
 		}
 	}
-	if cust.Status == "Rejected" {
+	if cust.Status == "rejected" {
 		return apperror.AppError{
 			ErrorCode: 1,
 			ErrorMessage: "Status anda rejected mohon diperiksa kembali",

@@ -45,31 +45,31 @@ const (
     COALESCE(SUM(tp.payment), 0) AS paid, 
     tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS NeedToPay1Month ,
     (DATE_TRUNC('month', tx.date_approval) + INTERVAL '25 days' + INTERVAL '1 month' * (p.tenor)) AS deadlinepayment
-FROM tx_application AS tx
-LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
-JOIN customer AS c ON tx.customer_id = c.id
-JOIN loan_product AS p ON tx.loan_product_id = p.id
-WHERE tx.id = $1
-GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest, tx.date_approval;
+	FROM tx_application AS tx
+	LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
+	JOIN customer AS c ON tx.customer_id = c.id
+	JOIN loan_product AS p ON tx.loan_product_id = p.id
+	WHERE tx.id = $1
+	GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest, tx.date_approval;
 	`
 	GET_TRANSACTION_PAYMENT_BY_ID_VALIDATE = `
 	SELECT tx.customer_id AS custId, c.name AS custName, CONCAT(p.tenor, ' bulan') AS tenor, (tx.amount) * (p.interest / 100) + (tx.amount) AS MustToPay, 
     COALESCE(SUM(tp.payment), 0) AS paid, 
     tx.amount - COALESCE(SUM(tp.payment), 0) AS needtopay, (tx.amount / p.tenor) * (p.interest / 100) + (tx.amount / p.tenor) AS OneMonthPayment
-FROM tx_application AS tx
-LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
-JOIN customer AS c ON tx.customer_id = c.id
-JOIN loan_product AS p ON tx.loan_product_id = p.id
-WHERE tx.id = $1
-GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest;
+	FROM tx_application AS tx
+	LEFT JOIN tx_payment AS tp ON tx.id = tp.aplication_id
+	JOIN customer AS c ON tx.customer_id = c.id
+	JOIN loan_product AS p ON tx.loan_product_id = p.id
+	WHERE tx.id = $1
+	GROUP BY tx.customer_id, c.name, p.tenor, tx.amount, p.interest;
 	`
 	UPDATE_TRANSACTION_PAYMENT_STATUS = "UPDATE tx_payment SET status = $1 WHERE id = $2"
 
 	GET_ALL_CUSTOMER   = "SELECT id, user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status FROM customer ORDER BY id ASC"
 	GET_CUSTOMER_BY_ID = "SELECT id, user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status FROM customer WHERE id = $1"
-	INSERT_CUSTOMER    = "INSERT INTO customer (user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status, bank_account) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+	INSERT_CUSTOMER    = "INSERT INTO customer (user_id, name, address, nik, birthdate, family_member, family_phone, family_address, status, bank_account, phone_number, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)"
 	DELETE_CUSTOMER    = "DELETE FROM customer WHERE id=$1)"
-	UPDATE_CUSTOMER    = "UPDATE customer SET user_id = $2, name = $3, address = $4, nik = $5, birthdate = $6, family_member = $7, family_phone = $8, family_address = $9, bank_account = $10 WHERE id = $1"
+	UPDATE_CUSTOMER    = "UPDATE customer SET name = $2, address = $3, nik = $4, birthdate = $5, family_member = $6, family_phone = $7, family_address = $8, bank_account = $9, phone_number = $10, gender = $11 WHERE id = $1"
 	UPDATE_CUSTOMER_STATUS = "UPDATE customer SET status = $1 WHERE id = $2"
 
 	GET_ALL_LOAN_PRODUCT   = "SELECT id, product_name, tenor, max_loan, interest, late_interest FROM loan_product ORDER BY id ASC"

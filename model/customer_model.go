@@ -7,8 +7,10 @@ type CustomerModel struct {
 	UserId        int
 	Name          string
 	Address       string
+	Gender 		  string
 	NIK           int
-	BankAccount int
+	Phone 		  string
+	BankAccount   string
 	Birthdate     time.Time
 	FamilyMember  string
 	FamilyPhone   string

@@ -5,6 +5,7 @@ import (
 	"peminjaman/apperror"
 	"peminjaman/model"
 	"peminjaman/repo"
+	"strings"
 )
 
 type TransactionApplyUsecase interface {
@@ -51,13 +52,13 @@ func (taUsecase *transactionApplyUsecaseImpl) InsertApplication(tra *model.Trans
 			ErrorMessage: fmt.Sprintf("data customer dengan id %v tidak ada", tra.CustomerId),
 		}
 	}
-	if cust.Status == "pending" {
+	if strings.ToLower(cust.Status) == "pending" {
 		return apperror.AppError{
 			ErrorCode: 1,
 			ErrorMessage: "Status anda masih pending mohon ditunggu",
 		}
 	}
-	if cust.Status == "rejected" {
+	if strings.ToLower(cust.Status) == "rejected" {
 		return apperror.AppError{
 			ErrorCode: 1,
 			ErrorMessage: "Status anda rejected mohon diperiksa kembali",

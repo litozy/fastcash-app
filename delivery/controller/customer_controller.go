@@ -72,6 +72,7 @@ func (cstmHandler CustomerHandler) InsertCustomer(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"success":      false,
 			"errorMessage": "Invalid JSON data",
+			"error" : err.Error(),
 		})
 		return
 	}
@@ -81,6 +82,7 @@ func (cstmHandler CustomerHandler) InsertCustomer(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"success":      false,
 			"errorMessage": "Terjadi kesalahan ketika menyimpan data customer",
+			"error" : err.Error(),
 		})
 		return
 	}
@@ -115,6 +117,7 @@ func (cstmHandler CustomerHandler) DeleteCustomer(ctx *gin.Context) {
 			"success":      false,
 			"errorMessage": "Terjadi kesalahan dalam menghapus data customer",
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -178,8 +181,8 @@ func NewCustomerHandler(srv *gin.Engine, cstmUsecase usecase.CustomerUsecase) *C
 	cstmHandler := &CustomerHandler{
 		cstmUsecase: cstmUsecase,
 	}
-	srv.GET("/customer", cstmHandler.GetCustomerById)
-	srv.GET("/customer/:id", cstmHandler.GetAllCustomer)
+	srv.GET("/customer/:id", cstmHandler.GetCustomerById)
+	srv.GET("/customer", cstmHandler.GetAllCustomer)
 	srv.POST("/customer", cstmHandler.InsertCustomer)
 	srv.DELETE("/customer/:id", cstmHandler.DeleteCustomer)
 	srv.PUT("/customer", cstmHandler.UpdateCustomer)

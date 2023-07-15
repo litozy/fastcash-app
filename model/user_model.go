@@ -5,7 +5,7 @@ import "time"
 type UserModel struct {
 	Id        int
 	UserName  string
-	Password  string `json:"-"`
+	Password  string 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -11,7 +11,7 @@ import (
 type UserRepo interface {
 	GetAllUser() ([]model.UserModel, error)
 	GetUserByName(string) (*model.UserModel, error)
-	InsertUser(*model.UserModel) error
+	RegisterUser(*model.UserModel) error
 	GetUserById(int) (*model.UserModel, error)
 }
 
@@ -31,21 +31,33 @@ func (usrRepo *userRepoImpl) GetAllUser() ([]model.UserModel, error)  {
 	var arrUser []model.UserModel
 	for rows.Next() {
 		usr := &model.UserModel{}
-		rows.Scan(&usr.Id, &usr.UserName, &usr.CreatedAt, &usr.UpdatedAt)
+		rows.Scan(&usr.Id, &usr.UserName, &usr.Password, &usr.CreatedAt, &usr.UpdatedAt)
 		arrUser = append(arrUser, *usr)
 	}
 	return arrUser, nil
 }
 
-func (usrRepo *userRepoImpl) InsertUser(usr *model.UserModel) error {
+// func (usrRepo *userRepoImpl) InsertUser(usr *model.UserModel) error {
+// 	qry := utils.INSERT_USER
+
+// 	usr.CreatedAt = time.Now()
+// 	usr.UpdatedAt = time.Now()
+
+// 	_, err := usrRepo.db.Exec(qry, &usr.UserName, &usr.Password, usr.CreatedAt, usr.UpdatedAt)
+// 	if err != nil {
+// 		return fmt.Errorf("error on userRepoImpl.InsertUser() : %w", err)
+// 	}
+// 	return nil
+// }
+
+func (usrRepo *userRepoImpl) RegisterUser(usr *model.UserModel) error {
 	qry := utils.INSERT_USER
 
 	usr.CreatedAt = time.Now()
 	usr.UpdatedAt = time.Now()
-
-	_, err := usrRepo.db.Exec(qry, &usr.Id , &usr.UserName, &usr.Password, &usr.CreatedAt, &usr.UpdatedAt)
+	_, err := usrRepo.db.Exec(qry, &usr.UserName, &usr.Password, usr.CreatedAt, usr.UpdatedAt)
 	if err != nil {
-		return fmt.Errorf("error on userRepoImpl.InsertUser() : %w", err)
+		return fmt.Errorf("error on userRepoImpl.RegisterUser() : %w", err)
 	}
 	return nil
 }

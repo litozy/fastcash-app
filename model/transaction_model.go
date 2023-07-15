@@ -19,7 +19,8 @@ type TransactionApplyView struct {
 	CustomerName string
 	CustomerBankAccount int
 	Nik          int
-	Product      int
+	ProductRaw   int `json:"-"`
+	Product 	 string
 	Amount       float64
 	DateApproval string `json:"DateApproval,omitempty"`
 	StatusOjk    int

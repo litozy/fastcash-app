@@ -115,6 +115,7 @@ func (lprdctHandler LoanProductHandler) DeleteLoanProduct(ctx *gin.Context) {
 			"success":      false,
 			"errorMessage": "Terjadi kesalahan dalam menghapus data loanProduct",
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -152,8 +153,8 @@ func NewLoanProductHandler(srv *gin.Engine, lprdctUsecase usecase.LoanProductUse
 	lprdctHandler := &LoanProductHandler{
 		lprdctUsecase: lprdctUsecase,
 	}
-	srv.GET("/loanProduct", lprdctHandler.GetLoanProductById)
-	srv.GET("/loanProduct/:id", lprdctHandler.GetAllLoanProduct)
+	srv.GET("/loanProduct/:id", lprdctHandler.GetLoanProductById)
+	srv.GET("/loanProduct", lprdctHandler.GetAllLoanProduct)
 	srv.POST("/loanProduct", lprdctHandler.InsertLoanProduct)
 	srv.DELETE("/loanProduct/:id", lprdctHandler.DeleteLoanProduct)
 	srv.PUT("/loanProduct", lprdctHandler.UpdateLoanProduct)

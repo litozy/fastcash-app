@@ -61,7 +61,7 @@ func (usrHandler *userHandlerImpl) GetUserByName(ctx *gin.Context) {
 	})
 }
 
-func (usrHandler *userHandlerImpl) InsertUser(ctx *gin.Context) {
+func (usrHandler *userHandlerImpl) RegisterUser(ctx *gin.Context) {
 	usr := model.UserModel{}
 	err := ctx.ShouldBindJSON(&usr)
 	if err != nil {
@@ -87,7 +87,7 @@ func (usrHandler *userHandlerImpl) InsertUser(ctx *gin.Context) {
 		return
 	}
 
-	err = usrHandler.usrUsecase.InsertUser(&usr)
+	err = usrHandler.usrUsecase.RegisterUser(&usr)
 	if err != nil {
 
 		appError := apperror.AppError{}
@@ -117,9 +117,8 @@ func NewUserController(srv *gin.Engine, usrUsecase usecase.UserUsecase) UserHand
 	usrHandler := &userHandlerImpl{
 		usrUsecase: usrUsecase,
 	}
-	srv.POST("/user", usrHandler.InsertUser)
+	srv.POST("/user", usrHandler.RegisterUser)
 	srv.GET("/user", usrHandler.GetAllUser)
 	srv.GET("/users/:name", usrHandler.GetUserByName)
-	srv.GET("/users/a")
 	return usrHandler
 }

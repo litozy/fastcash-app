@@ -10,7 +10,7 @@ import (
 )
 
 type UserUsecase interface {
-	InsertUser(*model.UserModel) error
+	RegisterUser(*model.UserModel) error
 	GetAllUser() ([]model.UserModel, error)
 	GetUserByName(string) (*model.UserModel, error)
 }
@@ -34,14 +34,14 @@ func (usrUsecase *userUsecaseImpl) GetUserByName(name string) (*model.UserModel,
 	return usr, nil
 }
 
-func (usrUsecase *userUsecaseImpl) InsertUser(usr *model.UserModel) error {
-	usr, err := usrUsecase.usrRepo.GetUserByName(usr.UserName)
+func (usrUsecase *userUsecaseImpl) RegisterUser(usr *model.UserModel) error {
+	usra, err := usrUsecase.usrRepo.GetUserByName(usr.UserName)
 	if err != nil {
 		return fmt.Errorf("usrUsecase.usrRepo.GetUserByName() : %w" , err)
 	}
-	if usr != nil {
+	if usra != nil {
 		return apperror.AppError{
-			ErrorCode: 400,
+			ErrorCode: 1,
 			ErrorMessage: fmt.Sprintf("data user dengan nama : %s sudah ada", usr.UserName),
 		}
 	}
@@ -51,7 +51,7 @@ func (usrUsecase *userUsecaseImpl) InsertUser(usr *model.UserModel) error {
 	} 
 	usr.Password = string(hashedPassword)
 
-	return usrUsecase.usrRepo.InsertUser(usr)
+	return usrUsecase.usrRepo.RegisterUser(usr)
 }
 
 func (usrUsecase *userUsecaseImpl) GetAllUser() ([]model.UserModel, error) {

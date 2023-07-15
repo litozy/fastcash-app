@@ -30,7 +30,7 @@ func (cstmRepo *customerRepoImpl) GetAllCustomer() ([]*model.CustomerModel, erro
 
 	for rows.Next() {
 		cstm := &model.CustomerModel{}
-		rows.Scan(&cstm.Id, &cstm.UserId, &cstm.Name, &cstm.Address, &cstm.NIK, &cstm.Birthdate, &cstm.FamilyMember, &cstm.FamilyPhone, &cstm.FamilyAddress, &cstm.Status)
+		rows.Scan(&cstm.Id, &cstm.UserId, &cstm.Name, &cstm.Address, &cstm.NIK, &cstm.Birthdate, &cstm.FamilyMember, &cstm.FamilyPhone, &cstm.FamilyAddress, &cstm.Status, &cstm.Gender, &cstm.Phone, &cstm.BankAccount)
 		arrCustomer = append(arrCustomer, cstm)
 	}
 	return arrCustomer, nil
@@ -39,7 +39,7 @@ func (cstmRepo *customerRepoImpl) GetAllCustomer() ([]*model.CustomerModel, erro
 func (cstmRepo *customerRepoImpl) GetCustomerById(id int) (*model.CustomerModel, error) {
 	qry := utils.GET_CUSTOMER_BY_ID
 	cstm := &model.CustomerModel{}
-	err := cstmRepo.db.QueryRow(qry, id).Scan(&cstm.Id, &cstm.UserId, &cstm.Name, &cstm.Address, &cstm.NIK, &cstm.Birthdate, &cstm.FamilyMember, &cstm.FamilyPhone, &cstm.FamilyAddress, &cstm.Status)
+	err := cstmRepo.db.QueryRow(qry, id).Scan(&cstm.Id, &cstm.UserId, &cstm.Name, &cstm.Address, &cstm.NIK, &cstm.Birthdate, &cstm.FamilyMember, &cstm.FamilyPhone, &cstm.FamilyAddress, &cstm.Status, &cstm.Gender, &cstm.Phone, &cstm.BankAccount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -52,7 +52,7 @@ func (cstmRepo *customerRepoImpl) GetCustomerById(id int) (*model.CustomerModel,
 func (cstmRepo *customerRepoImpl) InsertCustomer(cstm *model.CustomerModel) error {
 	qry := utils.INSERT_CUSTOMER
 	cstm.Status = "pending"
-	_, err := cstmRepo.db.Exec(qry, cstm.UserId, cstm.Name, cstm.Address, cstm.NIK, cstm.Birthdate, cstm.FamilyMember, cstm.FamilyPhone, cstm.FamilyAddress, cstm.Status, cstm.BankAccount, cstm.Phone)
+	_, err := cstmRepo.db.Exec(qry, cstm.UserId, cstm.Name, cstm.Address, cstm.NIK, cstm.Birthdate, cstm.FamilyMember, cstm.FamilyPhone, cstm.FamilyAddress, cstm.Status, cstm.BankAccount, cstm.Phone, cstm.Gender)
 	if err != nil {
 		return fmt.Errorf("insertCustomer error : %v", err)
 	}
@@ -70,7 +70,7 @@ func (cstmRepo *customerRepoImpl) DeleteCustomer(id int) error {
 
 func (cstmRepo *customerRepoImpl) UpdateCustomer(cstm *model.CustomerModel) error {
 	qry := utils.UPDATE_CUSTOMER
-	_, err := cstmRepo.db.Exec(qry, cstm.Id, cstm.Name, cstm.Address, cstm.NIK, cstm.Birthdate, cstm.FamilyMember, cstm.FamilyPhone, cstm.FamilyAddress, cstm.BankAccount, cstm.Phone)
+	_, err := cstmRepo.db.Exec(qry, cstm.Id, cstm.Name, cstm.Address, cstm.NIK, cstm.Birthdate, cstm.FamilyMember, cstm.FamilyPhone, cstm.FamilyAddress, cstm.BankAccount, cstm.Phone, cstm.Gender)
 	if err != nil {
 		return fmt.Errorf("UpdateCustomer error : %v", err)
 	}

@@ -34,7 +34,7 @@ func (taRepo *transactionApplyImpl) GetAllApp() ([]model.TransactionApplyView, e
 		tra := model.TransactionApplyView{}
 		var date time.Time
 		err := rows.Scan(
-			&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.CustomerBankAccount, &tra.Nik, &tra.Product, &tra.Amount, &date, &tra.StatusOjk, &tra.StatusDetail,
+			&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.CustomerBankAccount, &tra.Nik, &tra.ProductRaw, &tra.Product, &tra.Amount, &date, &tra.StatusOjk, &tra.StatusDetail,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("getAllTransaction(): %w", err)
@@ -54,7 +54,7 @@ func (taRepo *transactionApplyImpl) GetAppById(id int) (*model.TransactionApplyV
 	qry := utils.GET_TRANSACTION_APPLICATION_BY_ID
 	tra := &model.TransactionApplyView{}
 	var date time.Time
-	err := taRepo.db.QueryRow(qry, id).Scan(&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.CustomerBankAccount, &tra.Nik, &tra.Product, &tra.Amount, &date, &tra.StatusOjk, &tra.StatusDetail)
+	err := taRepo.db.QueryRow(qry, id).Scan(&tra.Id, &tra.CustomerId, &tra.CustomerName, &tra.CustomerBankAccount, &tra.Nik, &tra.ProductRaw, &tra.Product, &tra.Amount, &date, &tra.StatusOjk, &tra.StatusDetail)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil

@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-const KEY = "asd24fs23"
+const KEY = "asd24fs234567890"
 
 type JwtClaims struct {
 	jwt.StandardClaims

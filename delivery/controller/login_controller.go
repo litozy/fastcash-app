@@ -27,7 +27,6 @@ func (lgController loginControllerImpl) Login(ctx *gin.Context) {
 		})
 		return
 	}
-
 	err = lgController.lgUsecase.GetUserByNameAndPassword(loginData.Username, loginData.Password)
 	if err != nil {
 
@@ -47,6 +46,7 @@ func (lgController loginControllerImpl) Login(ctx *gin.Context) {
 		}
 		return
 	}
+	
 
 	temp, err := authutil.GenerateToken(loginData.Username)
 	if err != nil {

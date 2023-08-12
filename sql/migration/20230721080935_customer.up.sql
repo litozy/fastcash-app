@@ -1,0 +1,15 @@
+CREATE TABLE customer (
+id SERIAL PRIMARY KEY NOT NULL,
+user_id INT NOT NULL,
+name VARCHAR (50) NOT NULL,
+address VARCHAR(50) NOT NULL,
+nik VARCHAR(50) NOT NULL,
+phone_number VARCHAR(50) NOT NULL,
+gender VARCHAR(20) NOT NULL,
+bank_account INT NOT NULL,
+birthdate DATE NOT NULL,
+family_member VARCHAR(50) NOT NULL,
+family_phone VARCHAR NOT NULL,
+family_address VARCHAR (50) NOT NULL,
+status VARCHAR (20) NOT NULL,
+FOREIGN KEY (user_id) REFERENCES user_credential(id));

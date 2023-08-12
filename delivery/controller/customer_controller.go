@@ -181,7 +181,7 @@ func NewCustomerHandler(srv *gin.Engine, cstmUsecase usecase.CustomerUsecase) *C
 	cstmHandler := &CustomerHandler{
 		cstmUsecase: cstmUsecase,
 	}
-	srv.GET("/customer/:id", cstmHandler.GetCustomerById)
+	srv.GET("/customer/:id",  cstmHandler.GetCustomerById)
 	srv.GET("/customer", cstmHandler.GetAllCustomer)
 	srv.POST("/customer", cstmHandler.InsertCustomer)
 	srv.DELETE("/customer/:id", cstmHandler.DeleteCustomer)
